@@ -1,0 +1,763 @@
+Loading llama model...
+Model loaded successfully: llama
+Loading input file: data/matching_evidence_full.json
+Output will be saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processing 150 examples in multi_people mode with llama model
+No existing results file found, starting from scratch...
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12994 processed in 31.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 1 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13003 processed in 28.32 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 2 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13006 processed in 28.86 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 3 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13019 processed in 29.76 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 4 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13020 processed in 29.79 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 5 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13035 processed in 30.09 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 6 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13036 processed in 29.25 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 7 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13037 processed in 29.95 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 8 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13041 processed in 31.05 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 9 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13058 processed in 29.17 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 10 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13063 processed in 31.37 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 11 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13068 processed in 29.29 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 12 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13070 processed in 30.65 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 13 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13072 processed in 30.42 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 14 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13091 processed in 30.63 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 15 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13096 processed in 30.16 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 16 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13105 processed in 30.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 17 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13109 processed in 30.48 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 18 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13115 processed in 30.62 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 19 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13122 processed in 30.15 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 20 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13124 processed in 30.95 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 21 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13127 processed in 28.67 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 22 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13134 processed in 29.21 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 23 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13135 processed in 29.89 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 24 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13144 processed in 29.06 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 25 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13152 processed in 30.76 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 26 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13156 processed in 31.02 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 27 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13158 processed in 28.71 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 28 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13162 processed in 30.84 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 29 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13171 processed in 29.55 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 30 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13172 processed in 29.23 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 31 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13178 processed in 27.57 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 32 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13190 processed in 29.97 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 33 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13199 processed in 29.89 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 34 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13204 processed in 27.23 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 35 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13208 processed in 31.12 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 36 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13210 processed in 27.31 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 37 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13213 processed in 30.10 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 38 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13227 processed in 28.66 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 39 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13229 processed in 30.51 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 40 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13231 processed in 30.58 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 41 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13233 processed in 30.89 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 42 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13235 processed in 30.42 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 43 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13245 processed in 30.54 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 44 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13246 processed in 30.55 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 45 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13248 processed in 30.72 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 46 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13257 processed in 30.57 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 47 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13263 processed in 28.71 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 48 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13267 processed in 29.41 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 49 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13270 processed in 29.75 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 50 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13028 processed in 27.13 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 51 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13066 processed in 29.13 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 52 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13074 processed in 27.94 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 53 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13132 processed in 30.41 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 54 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13209 processed in 29.10 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 55 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13226 processed in 29.08 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 56 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13237 processed in 29.33 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 57 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13273 processed in 29.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 58 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13277 processed in 30.23 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 59 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13319 processed in 28.62 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 60 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13326 processed in 30.17 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 61 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13361 processed in 30.26 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 62 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13372 processed in 29.53 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 63 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13375 processed in 29.30 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 64 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13395 processed in 29.59 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 65 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13409 processed in 29.20 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 66 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13460 processed in 30.87 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 67 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13475 processed in 29.93 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 68 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13546 processed in 28.69 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 69 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13553 processed in 30.17 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 70 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13556 processed in 30.10 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 71 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13567 processed in 30.31 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 72 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13581 processed in 29.07 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 73 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13607 processed in 29.70 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 74 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13621 processed in 27.58 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 75 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13639 processed in 29.71 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 76 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13663 processed in 27.19 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 77 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13756 processed in 28.22 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 78 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13764 processed in 30.49 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 79 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13766 processed in 30.49 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 80 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13789 processed in 29.79 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 81 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13808 processed in 30.34 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 82 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13832 processed in 29.67 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 83 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13919 processed in 30.00 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 84 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13943 processed in 28.41 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 85 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13949 processed in 30.42 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 86 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13958 processed in 30.70 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 87 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13959 processed in 31.58 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 88 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13986 processed in 30.40 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 89 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14009 processed in 29.58 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 90 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14014 processed in 29.20 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 91 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14050 processed in 30.47 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 92 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14120 processed in 28.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 93 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14139 processed in 28.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 94 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14193 processed in 29.11 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 95 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14248 processed in 30.46 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 96 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14256 processed in 29.32 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 97 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14281 processed in 29.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 98 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14283 processed in 29.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 99 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 14293 processed in 30.62 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 100 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12995 processed in 27.31 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 101 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12996 processed in 26.57 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 102 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12997 processed in 29.61 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 103 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12998 processed in 28.54 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 104 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12999 processed in 28.65 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 105 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13000 processed in 30.68 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 106 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13001 processed in 29.73 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 107 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13002 processed in 28.50 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 108 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13004 processed in 30.08 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 109 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13005 processed in 26.76 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 110 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13007 processed in 27.36 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 111 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13008 processed in 27.03 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 112 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13009 processed in 29.93 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 113 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13010 processed in 25.99 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 114 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13011 processed in 28.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 115 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13012 processed in 26.05 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 116 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13013 processed in 25.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 117 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13014 processed in 30.59 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 118 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13015 processed in 29.43 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 119 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13016 processed in 29.70 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 120 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13017 processed in 29.22 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 121 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13018 processed in 29.10 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 122 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13021 processed in 27.62 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 123 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13022 processed in 28.52 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 124 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13023 processed in 29.92 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 125 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13024 processed in 29.91 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 126 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13025 processed in 30.13 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 127 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13026 processed in 31.04 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 128 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13027 processed in 29.72 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 129 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13029 processed in 30.27 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 130 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13030 processed in 27.61 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 131 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13031 processed in 30.67 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 132 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13032 processed in 30.01 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 133 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13033 processed in 27.54 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 134 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13034 processed in 29.50 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 135 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13038 processed in 27.16 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 136 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13039 processed in 27.89 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 137 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13040 processed in 26.43 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 138 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13042 processed in 28.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 139 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13043 processed in 26.30 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 140 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13044 processed in 30.46 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 141 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13045 processed in 30.27 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 142 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13046 processed in 30.78 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 143 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13047 processed in 30.66 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 144 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13048 processed in 30.65 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 145 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13049 processed in 30.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 146 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13050 processed in 30.19 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 147 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13051 processed in 27.92 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 148 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13052 processed in 29.80 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 149 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 13053 processed in 28.53 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_llama.json
+Processed 150 examples
+
+=== 时间统计 ===
+总处理时间: 4415.37 秒 (73.59 分钟)
+实际处理时间: 4415.37 秒 (73.59 分钟)
+处理的claim数量: 150
+平均每个claim处理时间: 29.44 秒
+预计剩余时间: 0.00 秒
