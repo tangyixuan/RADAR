@@ -2,6 +2,7 @@ import argparse
 import json
 from tqdm import tqdm
 import os
+import time
 from model.loader import load_model
 
 def run_single_agent(claim, evidence, model_info):
@@ -543,16 +544,24 @@ def main():
     print(f"Output will be saved to: {output_file}")
     print(f"Processing {len(all_examples)} examples in {args.mode} mode with {args.model} model")
 
+    total_start_time = time.time()
+    processed_count = 0
+
     try:
         with open(output_file, "r") as f:
             answer_map = json.load(f)
+        print(f"Found existing results file with {len(answer_map)} completed examples")
     except FileNotFoundError:
         answer_map = {}
+        print("No existing results file found, starting from scratch...")
 
     for example_id, example in tqdm(all_examples.items(), desc=f"Processing examples ({args.mode} + {args.model})"):
         if example_id in answer_map:
             continue
 
+        # 记录单个claim开始时间
+        claim_start_time = time.time()
+        
         claim = example["claim"]
         evidence = example["evidence_full_text"]
 
@@ -818,12 +827,35 @@ def main():
                 "domain_scientist_closing": dom_close,
                 "final_verdict": final_result
             }
-           
-        # Save final results
+        
+        claim_end_time = time.time()
+        claim_processing_time = claim_end_time - claim_start_time
+        processed_count += 1
+        
+        print(f"Claim {example_id} processed in {claim_processing_time:.2f} seconds")
+
         with open(output_file, "w") as f:
             json.dump(answer_map, f, indent=2)
         print(f"Results saved to: {output_file}")
         print(f"Processed {len(answer_map)} examples")
+
+    total_end_time = time.time()
+    total_processing_time = total_end_time - total_start_time
+    
+    print(f"\n=== 时间统计 ===")
+    print(f"总处理时间: {total_processing_time:.2f} 秒 ({total_processing_time/60:.2f} 分钟)")
+    print(f"实际处理时间: {total_processing_time:.2f} 秒 ({total_processing_time/60:.2f} 分钟)")
+    print(f"处理的claim数量: {processed_count}")
+    if processed_count > 0:
+        avg_time_per_claim = total_processing_time / processed_count
+        print(f"平均每个claim处理时间: {avg_time_per_claim:.2f} 秒")
+        
+        remaining_claims = len(all_examples) - len(answer_map)
+        if remaining_claims > 0:
+            estimated_remaining_time = remaining_claims * avg_time_per_claim
+            print(f"预计剩余时间: {estimated_remaining_time:.2f} 秒 ({estimated_remaining_time/60:.2f} 分钟)")
+        else:
+            print(f"预计剩余时间: 0.00 秒")
 
 if __name__ == "__main__":
     main()

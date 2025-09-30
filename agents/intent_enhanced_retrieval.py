@@ -37,34 +37,75 @@ def reformulate_claim_con(claim, intent):
 
 # === Shared model runner ===
 def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
-    if model is None:
-        # Handle GPT case
-        client, model_name = tokenizer
-        messages = [
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": user_prompt}
-        ]
-        response = client.chat.completions.create(
-            model=model_name,
-            messages=messages,
-            max_tokens=max_tokens,
-            temperature=0.7
-        )
-        return response.choices[0].message.content.strip()
+    """Run model inference based on model type"""
+    if model_info is None:
+        raise ValueError("Model not loaded. Please call set_model_info() first.")
+    
+    if len(model_info) == 2:
+        first, second = model_info
+        
+        # 通过检查第二个元素来区分模型类型
+        if isinstance(second, str):
+            # GPT model: (client, model_name)
+            client, model_name = model_info
+            messages = [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ]  
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=0.7
+            )
+            return response.choices[0].message.content.strip()
+        
+        else:
+            # Local model: (tokenizer, model)
+            tokenizer, model = model_info
+            
+            # 通过tokenizer的类名或模型名称来区分Qwen和Llama
+            tokenizer_class_name = tokenizer.__class__.__name__.lower()
+            if 'qwen' in tokenizer_class_name or hasattr(tokenizer, 'apply_chat_template'):
+                print("Qwen model")
+                # Qwen model - 使用apply_chat_template
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ]
+                text = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True
+                )
+            else:
+                print("Llama model")
+                # Llama model - 使用原始模板格式
+                text = f"<|begin_of_text|><|system|>{system_prompt}<|user|>{user_prompt}<|assistant|>"
+            
+            inputs = tokenizer([text], return_tensors="pt").to(model.device)
+            outputs = model.generate(
+                **inputs,
+                max_new_tokens=max_tokens,
+                do_sample=False,
+                eos_token_id=tokenizer.eos_token_id
+            )
+            response = tokenizer.decode(outputs[0], skip_special_tokens=True)
+            # 对于Qwen模型，需要根据实际输出格式来提取assistant回复
+            if hasattr(tokenizer, 'apply_chat_template'):
+                # Qwen模型使用简单的assistant标记
+                if "assistant" in response:
+                    return response.split("assistant")[-1].strip()
+                elif "<|assistant|>" in response:
+                    return response.split("<|assistant|>")[-1].strip()
+                else:
+                    return response.strip()
+            else:
+                # Llama模型使用原始格式
+                return response.split("<|assistant|>")[-1].strip()
+    
     else:
-        # Handle local models (Llama, Qwen)
-        full_prompt = f"<|begin_of_text|><|system|>\n{system_prompt}\n<|user|>\n{user_prompt}<|assistant|>\n"
-        inputs = tokenizer(full_prompt, return_tensors="pt").to(model.device)
-        outputs = model.generate(
-            **inputs,
-            max_new_tokens=max_tokens,
-            do_sample=False,
-            temperature=0.7,
-            eos_token_id=tokenizer.eos_token_id
-        )
-        response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-        return response.split("<|assistant|>")[-1].strip()
-
+        raise ValueError("Invalid model_info format")
 
 def intent_enhanced_reformulation(claim: str):
 
