@@ -25,12 +25,15 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
     
     if len(model_info) == 2:
         first, second = model_info
-        if hasattr(first, 'chat') and hasattr(first.chat, 'completions'):
+        
+        # 通过检查第二个元素来区分模型类型
+        if isinstance(second, str):
+            # GPT model: (client, model_name)
             client, model_name = model_info
             messages = [
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
-            ]
+            ]  
             response = client.chat.completions.create(
                 model=model_name,
                 messages=messages,
@@ -38,20 +41,52 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
                 temperature=0.7
             )
             return response.choices[0].message.content.strip()
+        
         else:
+            # Local model: (tokenizer, model)
             tokenizer, model = model_info
-            full_prompt = f"<|begin_of_text|><|system|>\n{system_prompt}\n<|user|>\n{user_prompt}<|assistant|>\n"
-            inputs = tokenizer(full_prompt, return_tensors="pt").to(model.device)
             
+            # 通过tokenizer的类名或模型名称来区分Qwen和Llama
+            tokenizer_class_name = tokenizer.__class__.__name__.lower()
+            # if 'qwen' in tokenizer_class_name or hasattr(tokenizer, 'apply_chat_template'):
+            if 'qwen' in tokenizer_class_name:
+                print("Qwen model")
+                # Qwen model - 使用apply_chat_template
+                messages = [
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_prompt}
+                ]
+                inputs = tokenizer.apply_chat_template(
+                    messages,
+                    add_generation_prompt=True,
+                    tokenize=True,
+                    return_dict=True,
+                    return_tensors="pt",
+                ).to(model.device)
+            else:
+                print("Llama model")
+                # Llama model - 使用原始模板格式
+                text = f"<|begin_of_text|><|system|>\n{system_prompt}\n<|user|>\n{user_prompt}<|assistant|>\n"
+                inputs = tokenizer([text], return_tensors="pt").to(model.device)
             outputs = model.generate(
                 **inputs,
                 max_new_tokens=max_tokens,
                 do_sample=False,
                 eos_token_id=tokenizer.eos_token_id
             )
-            
             response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-            return response.split("<|assistant|>")[-1].strip()
+            # 对于Qwen模型，需要根据实际输出格式来提取assistant回复
+            if hasattr(tokenizer, 'apply_chat_template'):
+                # Qwen模型使用简单的assistant标记
+                if "assistant\n" in response:
+                    return response.split("assistant\n")[-1].strip()
+                elif "<|assistant|>" in response:
+                    return response.split("<|assistant|>")[-1].strip()
+                else:
+                    return response.strip()
+            else:
+                # Llama模型使用原始格式
+                return response.split("<|assistant|>")[-1].strip()
     
     else:
         raise ValueError("Invalid model_info format")
