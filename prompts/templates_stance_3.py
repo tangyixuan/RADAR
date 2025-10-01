@@ -42,8 +42,8 @@ Retrieved Evidence:
 {evidence}
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 # === Multi-Agent Fact-Checking ===
@@ -182,8 +182,8 @@ Provide a closing statement that reinforces your position while highlighting the
 # Based on the evidence and arguments, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 # You MUST respond in exactly this format:
-# [VERDICT]: TRUE / FALSE / HALF-TRUE
 # [REASON]: <your explanation>
+# [VERDICT]: TRUE / FALSE / HALF-TRUE
 
 # Make the verdict in the last line.
 # """
@@ -214,8 +214,8 @@ Flexible analyst's closing: {flexible_close}
 Based on the evidence and arguments from all three participants, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -252,8 +252,8 @@ Con Agent:
 Based on the arguments and evidence, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 def user_prompt_judge_three_agents_full(claim, evidence, flexible_open, pro_open, con_open, flexible_rebut, pro_rebut, con_rebut, flexible_close, pro_close, con_close):
@@ -298,8 +298,8 @@ Flexible Analyst:
 Based on the arguments and evidence from all three participants, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 def user_prompt_intent_inference(claim):

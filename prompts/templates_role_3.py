@@ -259,8 +259,9 @@ Journalist:
 Based on the arguments and evidence from all three participants, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
+[REASON]: <your justification>
 [VERDICT]: TRUE / FALSE / HALF-TRUE  
-[REASON]: <your justification>"""
+"""
 
 # === LEGACY JUDGE (for backward compatibility) ===
 
@@ -296,5 +297,6 @@ Con Agent:
 Based on the arguments and evidence, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
+[REASON]: <your justification>
 [VERDICT]: TRUE / FALSE / HALF-TRUE  
-[REASON]: <your justification>"""
+"""

@@ -70,8 +70,8 @@ Retrieved Evidence:
 {evidence}
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 # === Multi-Agent Fact-Checking ===
 # === Opening Round ===
@@ -239,8 +239,8 @@ Scientist's closing: {con_close}
 Based on the evidence and arguments, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -271,8 +271,8 @@ Scientist's closing: {scientist_close}
 Based on the evidence and arguments from all three participants, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -309,8 +309,8 @@ Con Agent:
 Based on the arguments and evidence, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 def user_prompt_judge_three_agents_full(claim, evidence, politician_open, scientist_open, journalist_open, politician_rebut, scientist_rebut, journalist_rebut, politician_close, scientist_close, journalist_close):
@@ -354,8 +354,8 @@ Journalist:
 Based on the arguments and evidence from all three participants, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 def user_prompt_intent_inference(claim):

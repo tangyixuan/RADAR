@@ -40,8 +40,8 @@ Retrieved Evidence:
 {evidence}
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 # === Multi-Agent Fact-Checking ===
@@ -150,8 +150,8 @@ Con Agent:
 Based on the arguments and evidence, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 # === Intent Enhanced Reformulation ===
