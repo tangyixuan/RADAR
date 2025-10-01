@@ -96,6 +96,23 @@ def run_multi_agent_people(claim, evidence, model_info):
     )
     return pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close, final_result
 
+
+def run_multi_agent_people_bj(claim, evidence, model_info):
+    from agents.multi_agent_people_bj import set_model_info, run_multi_agent_people_bj as run_people_bj
+    set_model_info(model_info)
+
+    print("\n=== Running Multi-Agent People Debate (Between-Round Judge) ===")
+    return run_people_bj(claim, evidence)
+
+
+def run_multi_agent_people_fj(claim, evidence, model_info):
+    from agents.multi_agent_people_fj import set_model_info, run_multi_agent_people_fj as run_people_fj
+    set_model_info(model_info)
+
+    print("\n=== Running Multi-Agent People Debate (Front-Round Judge) ===")
+    return run_people_fj(claim, evidence)
+
+
 def run_multi_agent_people_intent(claim, evidence, model_info):
     from agents.multi_agent_people_intent import (
         set_model_info, run_multi_agent_people
@@ -477,11 +494,40 @@ def run_multi_agent_people_1r(claim, evidence, model_info):
     )
     return pol_open, sci_open, final_result
 
+def run_multi_agent_people_round(claim, evidence, model_info):
+    from agents.multi_agent_people_round import set_model_info, run_multi_agent_people_round as run_people_round
+    set_model_info(model_info)
+    
+    print("\n=== Running Multi-Agent People Debate with Round Judges ===")
+    return run_people_round(claim, evidence)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--mode",
-        choices=["single", "multi", "multi_people", "multi_people_intent", "multi_people_3", "multi_people_3_intent", "multi_role", "multi_stance_3", "multi_party", "four_agents", "four_agents_people", "multi_intent", "multi_stance_3_intent", "four_agents_intent", "four_agents_people_intent", "multi_people_1r", "multi_people_2r", "multi_people_4r"],
+        choices=[
+            "single",
+            "multi",
+            "multi_people",
+            "multi_people_bj",
+            "multi_people_fj",
+            "multi_people_intent",
+            "multi_people_3",
+            "multi_people_3_intent",
+            "multi_role",
+            "multi_stance_3",
+            "multi_party",
+            "four_agents",
+            "four_agents_people",
+            "multi_intent",
+            "multi_stance_3_intent",
+            "four_agents_intent",
+            "four_agents_people_intent",
+            "multi_people_1r",
+            "multi_people_2r",
+            "multi_people_4r",
+            "multi_people_round",
+        ],
         default="single",
         help="Choose inference mode."
     )
@@ -620,6 +666,14 @@ def main():
                 "final_verdict": final_result
             }
 
+        elif args.mode == "multi_people_bj":
+            result = run_multi_agent_people_bj(claim, evidence, model_info)
+            answer_map[example_id] = result
+
+        elif args.mode == "multi_people_fj":
+            result = run_multi_agent_people_fj(claim, evidence, model_info)
+            answer_map[example_id] = result
+
         elif args.mode == "multi_people_intent":
             intent, reformulated_pro, reformulated_con, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close, final_result = run_multi_agent_people_intent(claim, evidence, model_info)
             answer_map[example_id] = {
@@ -699,6 +753,10 @@ def main():
                 "scientist_closing": sci_close,
                 "final_verdict": final_result
             }
+
+        elif args.mode == "multi_people_round":
+            result = run_multi_agent_people_round(claim, evidence, model_info)
+            answer_map[example_id] = result
 
         elif args.mode == "multi_stance_3":
             flex_open, pro_open, con_open, flex_rebut, pro_rebut, con_rebut, flex_close, pro_close, con_close, final_result = run_multi_agent_stance_3(claim, evidence, model_info)
