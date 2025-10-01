@@ -497,9 +497,17 @@ def run_multi_agent_people_1r(claim, evidence, model_info):
 def run_multi_agent_people_round(claim, evidence, model_info):
     from agents.multi_agent_people_round import set_model_info, run_multi_agent_people_round as run_people_round
     set_model_info(model_info)
-    
+
     print("\n=== Running Multi-Agent People Debate with Round Judges ===")
     return run_people_round(claim, evidence)
+
+
+def run_multi_agent_people_round_mcq(claim, evidence, model_info):
+    from agents.multi_agent_people_round import set_model_info, run_multi_agent_people_round_mcq as run_people_round_mcq
+    set_model_info(model_info)
+
+    print("\n=== Running Multi-Agent People Debate with Round Judges (MCQ) ===")
+    return run_people_round_mcq(claim, evidence)
 
 def main():
     parser = argparse.ArgumentParser()
@@ -526,7 +534,8 @@ def main():
             "multi_people_1r",
             "multi_people_2r",
             "multi_people_4r",
-            "multi_people_round"
+            "multi_people_round",
+            "multi_people_round_mcq"
         ],
         default="single",
         help="Choose inference mode."
@@ -756,6 +765,10 @@ def main():
 
         elif args.mode == "multi_people_round":
             result = run_multi_agent_people_round(claim, evidence, model_info)
+            answer_map[example_id] = result
+
+        elif args.mode == "multi_people_round_mcq":
+            result = run_multi_agent_people_round_mcq(claim, evidence, model_info)
             answer_map[example_id] = result
 
         elif args.mode == "multi_stance_3":
