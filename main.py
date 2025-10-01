@@ -526,7 +526,7 @@ def main():
             "multi_people_1r",
             "multi_people_2r",
             "multi_people_4r",
-            "multi_people_round",
+            "multi_people_round"
         ],
         default="single",
         help="Choose inference mode."
