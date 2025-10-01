@@ -494,6 +494,13 @@ def run_multi_agent_people_1r(claim, evidence, model_info):
     )
     return pol_open, sci_open, final_result
 
+def run_multi_agent_people_round(claim, evidence, model_info):
+    from agents.multi_agent_people_round import set_model_info, run_multi_agent_people_round as run_people_round
+    set_model_info(model_info)
+    
+    print("\n=== Running Multi-Agent People Debate with Round Judges ===")
+    return run_people_round(claim, evidence)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -519,6 +526,7 @@ def main():
             "multi_people_1r",
             "multi_people_2r",
             "multi_people_4r",
+            "multi_people_round"
         ],
         default="single",
         help="Choose inference mode."
@@ -745,6 +753,10 @@ def main():
                 "scientist_closing": sci_close,
                 "final_verdict": final_result
             }
+
+        elif args.mode == "multi_people_round":
+            result = run_multi_agent_people_round(claim, evidence, model_info)
+            answer_map[example_id] = result
 
         elif args.mode == "multi_stance_3":
             flex_open, pro_open, con_open, flex_rebut, pro_rebut, con_rebut, flex_close, pro_close, con_close, final_result = run_multi_agent_stance_3(claim, evidence, model_info)
