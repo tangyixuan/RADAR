@@ -56,8 +56,8 @@ Retrieved Evidence:
 {evidence}
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 # === Multi-Agent Fact-Checking ===
 # === Opening Round ===
@@ -285,8 +285,8 @@ Scientist's closing: {con_close}
 Based on the evidence and arguments, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -306,8 +306,8 @@ Scientist's opening: {con_open}
 Based on the evidence and arguments, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -331,8 +331,8 @@ Scientist's rebuttal: {con_rebut}
 Based on the evidence and arguments, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -364,8 +364,8 @@ Scientist's closing: {con_close}
 Based on the evidence and arguments, decide if the claim is TRUE, FALSE, or HALF-TRUE.
 
 You MUST respond in exactly this format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE
 [REASON]: <your explanation>
+[VERDICT]: TRUE / FALSE / HALF-TRUE
 
 Make the verdict in the last line.
 """
@@ -402,8 +402,8 @@ Con Agent:
 Based on the arguments and evidence, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 def user_prompt_judge_full_4r(claim, evidence, pro_open, con_open, pro_rebut, con_rebut, pro_cross, con_cross, pro_close, con_close):
@@ -445,8 +445,8 @@ Con Agent:
 Based on the arguments and evidence, decide whether the claim is TRUE, FALSE, or HALF-TRUE.
 
 Answer format:
-[VERDICT]: TRUE / FALSE / HALF-TRUE  
 [REASON]: <your justification>
+[VERDICT]: TRUE / FALSE / HALF-TRUE  
 """
 
 def user_prompt_intent_inference(claim):
