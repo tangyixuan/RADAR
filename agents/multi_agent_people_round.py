@@ -14,16 +14,18 @@ from prompts.templates_people import (
 from agents.chat_template_utils import build_chat_prompt, extract_assistant_response
 import torch
 import math
+import re
 from typing import Dict
 
 # Global model info - will be set by main.py
 model_info = None
 
 
+MCQ_CHOICES = ("TRUE", "FALSE", "HALF-TRUE")
 MCQ_VERDICT_MAP = {
-    "A": "TRUE",
-    "B": "FALSE",
-    "C": "HALF-TRUE",
+    "TRUE": "TRUE",
+    "FALSE": "FALSE",
+    "HALF-TRUE": "HALF-TRUE",
 }
 
 def set_model_info(info):
@@ -259,17 +261,28 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300, get_p
         raise ValueError("Invalid model_info format")
 
 
-def _append_mcq_instructions(prompt: str) -> str:
-    """Ensure the prompt includes MCQ instructions."""
-    prompt = prompt.rstrip()
-    instructions = (
-        "\n\nChoose exactly one of the following options:\n"
-        "A) TRUE\n"
-        "B) FALSE\n"
-        "C) HALF-TRUE\n"
-        "Reply with the letter (A, B, or C) only."
-    )
-    return prompt + instructions
+def _extract_reason_section(response_text: str) -> str:
+    """Extract the reason section without the verdict line."""
+    reason_pattern = r'((?:\[)?REASON(?:\])?:.*?)(?=\n\s*(?:\[)?VERDICT(?:\])?:)'  # capture until verdict marker (with/without brackets)
+    match = re.search(reason_pattern, response_text, re.IGNORECASE | re.DOTALL)
+    if match:
+        reason_section = match.group(1).strip()
+    else:
+        # Fallback: remove any verdict lines and keep the rest
+        lines = [
+            line for line in response_text.strip().splitlines()
+            if not re.match(r'\s*(?:\[)?VERDICT(?:\])?:', line, re.IGNORECASE)
+        ]
+        reason_section = "\n".join(lines).strip()
+
+    if not reason_section:
+        return ""
+
+    reason_section = reason_section.rstrip()
+
+    if reason_section and not reason_section.endswith("\n"):
+        reason_section += "\n"
+    return reason_section
 
 
 def _logprobs_to_probabilities(logprob_map: Dict[str, float]) -> Dict[str, float]:
@@ -280,46 +293,70 @@ def _logprobs_to_probabilities(logprob_map: Dict[str, float]) -> Dict[str, float
     return {choice: (value / total if total > 0 else 0.0) for choice, value in exp_map.items()}
 
 
-def _compute_mcq_choice_logprobs_local(tokenizer, model, system_prompt: str, user_prompt: str) -> Dict[str, float]:
-    """Compute per-choice log-probabilities for local models."""
-    text, _ = build_chat_prompt(tokenizer, system_prompt, user_prompt)
-    base_inputs = tokenizer([text], return_tensors="pt").to(model.device)
-    prompt_length = base_inputs.input_ids.shape[1]
+def _common_prefix_length(first: list[int], second: list[int]) -> int:
+    """Return the length of the longest shared prefix between two token id lists."""
+    max_len = min(len(first), len(second))
+    idx = 0
+    while idx < max_len and first[idx] == second[idx]:
+        idx += 1
+    return idx
+
+
+def _compute_choice_logprobs_local(tokenizer, model, system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
+    """Compute per-choice average log-probabilities for local models (handles multi-token labels)."""
+    prompt_text, _ = build_chat_prompt(tokenizer, system_prompt, user_prompt)
+    base_text = prompt_text + assistant_context
+
+    base_encoding = tokenizer([base_text], return_tensors="pt")
+    base_ids = base_encoding["input_ids"][0].tolist()
 
     choice_logprobs: Dict[str, float] = {}
     model.eval()
     with torch.no_grad():
-        for choice in MCQ_VERDICT_MAP.keys():
-            choice_text = text + choice
-            choice_inputs = tokenizer([choice_text], return_tensors="pt").to(model.device)
-            input_ids = choice_inputs.input_ids
-            attention_mask = choice_inputs.get("attention_mask")
+        for choice in MCQ_CHOICES:
+            choice_text = base_text + choice
+            choice_encoding = tokenizer([choice_text], return_tensors="pt")
+            choice_ids = choice_encoding["input_ids"][0].tolist()
 
-            labels = input_ids.clone()
-            labels[:, :prompt_length] = -100
+            prefix_len = _common_prefix_length(base_ids, choice_ids)
 
-            outputs = model(
-                input_ids=input_ids,
-                attention_mask=attention_mask,
-                labels=labels
-            )
+            labels = choice_encoding["input_ids"].clone()
+            labels[:, :prefix_len] = -100
+            if tokenizer.pad_token_id is not None:
+                labels[labels == tokenizer.pad_token_id] = -100
 
-            token_count = (labels != -100).sum().item()
+            token_count = int((labels != -100).sum().item())
             if token_count == 0:
                 choice_logprobs[choice] = float("-inf")
-            else:
-                choice_logprobs[choice] = -outputs.loss.item() * token_count
+                continue
+
+            choice_inputs = {k: v.to(model.device) for k, v in choice_encoding.items()}
+            labels = labels.to(model.device)
+
+            model_kwargs = {
+                "input_ids": choice_inputs["input_ids"],
+                "labels": labels,
+            }
+            if "attention_mask" in choice_inputs:
+                model_kwargs["attention_mask"] = choice_inputs["attention_mask"]
+            if "position_ids" in choice_inputs:
+                model_kwargs["position_ids"] = choice_inputs["position_ids"]
+
+            outputs = model(**model_kwargs)
+
+            sum_logprob = -outputs.loss.item() * token_count
+            choice_logprobs[choice] = sum_logprob / token_count
 
     return choice_logprobs
 
 
-def _compute_mcq_choice_logprobs_gpt(client, model_name: str, system_prompt: str, user_prompt: str) -> Dict[str, float]:
-    """Compute per-choice log-probabilities for GPT-style models via echo logprobs."""
-    base_prompt = f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant: "
+def _compute_choice_logprobs_gpt(client, model_name: str, system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
+    """Compute next-token log-probabilities for choices using GPT-style models."""
+    base_prompt = f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant: {assistant_context}"
     base_length = len(base_prompt)
 
     choice_logprobs: Dict[str, float] = {}
-    for choice in MCQ_VERDICT_MAP.keys():
+    for choice in MCQ_CHOICES:
         prompt_with_choice = base_prompt + choice
         response = client.completions.create(
             model=model_name,
@@ -333,21 +370,46 @@ def _compute_mcq_choice_logprobs_gpt(client, model_name: str, system_prompt: str
         if logprob_data is None or logprob_data.tokens is None:
             raise RuntimeError("Logprob data unavailable for GPT MCQ scoring.")
 
-        logprob_sum = 0.0
-        for token, token_logprob, offset in zip(
-            logprob_data.tokens,
-            logprob_data.token_logprobs,
-            logprob_data.text_offset
-        ):
-            if offset is not None and offset >= base_length and token_logprob is not None:
-                logprob_sum += token_logprob
-        choice_logprobs[choice] = logprob_sum
+        tokens = logprob_data.tokens
+        token_logprobs = logprob_data.token_logprobs
+        text_offsets = logprob_data.text_offset
+
+        recorded = False
+        for delta in (0, 1, 2):
+            first_idx = None
+            for idx, offset in enumerate(text_offsets):
+                if offset is not None and offset >= base_length - delta:
+                    first_idx = idx
+                    break
+
+            if first_idx is None:
+                continue
+
+            sum_logprob = 0.0
+            token_count = 0
+            for idx in range(first_idx, len(tokens)):
+                offset = text_offsets[idx]
+                token_logprob = token_logprobs[idx]
+                if offset is None or token_logprob is None:
+                    continue
+                if offset < base_length - delta:
+                    continue
+                sum_logprob += token_logprob
+                token_count += 1
+
+            if token_count > 0:
+                choice_logprobs[choice] = sum_logprob / token_count
+                recorded = True
+                break
+
+        if not recorded:
+            choice_logprobs[choice] = float("-inf")
 
     return choice_logprobs
 
 
-def compute_mcq_choice_logprobs(system_prompt: str, user_prompt: str) -> Dict[str, float]:
-    """Dispatch log-probability computation based on loaded model."""
+def compute_choice_logprobs(system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
+    """Dispatch next-token log-probability computation based on loaded model."""
     if model_info is None:
         raise ValueError("Model not loaded. Please call set_model_info() first.")
 
@@ -357,33 +419,28 @@ def compute_mcq_choice_logprobs(system_prompt: str, user_prompt: str) -> Dict[st
     first, second = model_info
     if isinstance(second, str):
         client, model_name = model_info
-        return _compute_mcq_choice_logprobs_gpt(client, model_name, system_prompt, user_prompt)
+        return _compute_choice_logprobs_gpt(client, model_name, system_prompt, user_prompt, assistant_context)
 
     tokenizer, model = model_info
-    return _compute_mcq_choice_logprobs_local(tokenizer, model, system_prompt, user_prompt)
+    return _compute_choice_logprobs_local(tokenizer, model, system_prompt, user_prompt, assistant_context)
 
 
-def _build_mcq_judge_result(user_prompt: str) -> Dict[str, object]:
-    """Run MCQ scoring for a judge prompt and package results."""
+def _compute_verdict_probability_info(user_prompt: str, assistant_context: str) -> Dict[str, object]:
+    """Compute verdict token probabilities given context."""
     system_prompt = get_system_prompt("judge")
-    logprobs = compute_mcq_choice_logprobs(system_prompt, user_prompt)
-    choice_probabilities = _logprobs_to_probabilities(logprobs)
+    choice_logprobs = compute_choice_logprobs(system_prompt, user_prompt, assistant_context)
 
-    best_choice = max(choice_probabilities, key=choice_probabilities.get)
-    verdict = MCQ_VERDICT_MAP[best_choice]
-
-    verdict_probabilities = {
-        MCQ_VERDICT_MAP[choice]: choice_probabilities[choice]
-        for choice in MCQ_VERDICT_MAP
+    verdict_logprobs = {
+        MCQ_VERDICT_MAP[choice]: logprob for choice, logprob in choice_logprobs.items()
     }
+    verdict_probabilities = _logprobs_to_probabilities(verdict_logprobs)
+    predicted_verdict = max(verdict_probabilities, key=verdict_probabilities.get)
 
     return {
-        "response": best_choice,
-        "verdict": verdict,
-        "probability": verdict_probabilities[verdict],
-        "choice_probabilities": choice_probabilities,
-        "choice_logprobs": logprobs,
-        "probabilities": verdict_probabilities
+        "predicted_verdict": predicted_verdict,
+        "verdict_probabilities": verdict_probabilities,
+        "verdict_logprobs": verdict_logprobs,
+        "choice_logprobs": choice_logprobs,
     }
 
 # === Politician Agent ===
@@ -453,8 +510,25 @@ def judge_round_1(claim, evidence, pol_open, sci_open):
 
 
 def judge_round_1_mcq(claim, evidence, pol_open, sci_open):
-    prompt = _append_mcq_instructions(judge_prompt_1r(claim, evidence, pol_open, sci_open))
-    return _build_mcq_judge_result(prompt)
+    base_result = judge_round_1(claim, evidence, pol_open, sci_open)
+
+    reason_section = _extract_reason_section(base_result["response"])
+    reason_context = reason_section.rstrip("\n ")
+    assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
+    user_prompt = judge_prompt_1r(claim, evidence, pol_open, sci_open)
+    probability_info = _compute_verdict_probability_info(user_prompt, assistant_context)
+
+    augmented_result = dict(base_result)
+    augmented_result.update({
+        "reason_section": reason_section.strip(),
+        "probabilistic_verdict": probability_info["predicted_verdict"],
+        "verdict_probabilities": probability_info["verdict_probabilities"],
+        "verdict_logprobs": probability_info["verdict_logprobs"],
+        "choice_logprobs": probability_info["choice_logprobs"],
+        "choice_probabilities": _logprobs_to_probabilities(probability_info["choice_logprobs"]),
+    })
+
+    return augmented_result
 
 def judge_round_2(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut):
     """Judge after second round (opening + rebuttal statements)"""
@@ -496,10 +570,24 @@ def judge_round_2(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut):
 
 
 def judge_round_2_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut):
-    prompt = _append_mcq_instructions(
-        judge_prompt_2r(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
-    )
-    return _build_mcq_judge_result(prompt)
+    base_result = judge_round_2(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
+    reason_section = _extract_reason_section(base_result["response"])
+    reason_context = reason_section.rstrip("\n ")
+    assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
+    user_prompt = judge_prompt_2r(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
+    probability_info = _compute_verdict_probability_info(user_prompt, assistant_context)
+
+    augmented_result = dict(base_result)
+    augmented_result.update({
+        "reason_section": reason_section.strip(),
+        "probabilistic_verdict": probability_info["predicted_verdict"],
+        "verdict_probabilities": probability_info["verdict_probabilities"],
+        "verdict_logprobs": probability_info["verdict_logprobs"],
+        "choice_logprobs": probability_info["choice_logprobs"],
+        "choice_probabilities": _logprobs_to_probabilities(probability_info["choice_logprobs"]),
+    })
+
+    return augmented_result
 
 # === Final Judge Agent ===
 def judge_final_verdict(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close):
@@ -546,15 +634,31 @@ def judge_final_verdict(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebu
 
 
 def judge_final_verdict_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close):
-    prompt = _append_mcq_instructions(
-        judge_prompt(
-            claim, evidence,
-            pol_open, sci_open,
-            pol_rebut, sci_rebut,
-            pol_close, sci_close
-        )
+    base_result = judge_final_verdict(
+        claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close
     )
-    return _build_mcq_judge_result(prompt)
+    reason_section = _extract_reason_section(base_result["response"])
+    reason_context = reason_section.rstrip("\n ")
+    assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
+    user_prompt = judge_prompt(
+        claim, evidence,
+        pol_open, sci_open,
+        pol_rebut, sci_rebut,
+        pol_close, sci_close
+    )
+    probability_info = _compute_verdict_probability_info(user_prompt, assistant_context)
+
+    augmented_result = dict(base_result)
+    augmented_result.update({
+        "reason_section": reason_section.strip(),
+        "probabilistic_verdict": probability_info["predicted_verdict"],
+        "verdict_probabilities": probability_info["verdict_probabilities"],
+        "verdict_logprobs": probability_info["verdict_logprobs"],
+        "choice_logprobs": probability_info["choice_logprobs"],
+        "choice_probabilities": _logprobs_to_probabilities(probability_info["choice_logprobs"]),
+    })
+
+    return augmented_result
 
 # === Main Debate Function ===
 def run_multi_agent_people_round(claim, evidence):
@@ -602,28 +706,28 @@ def run_multi_agent_people_round(claim, evidence):
 
 
 def run_multi_agent_people_round_mcq(claim, evidence):
-    """Run the debate with MCQ-based judges to obtain per-verdict probabilities."""
-    print("\n=== Running Multi-Agent People Debate with Round Judges (MCQ) ===")
+    """Run the debate and compute verdict token probabilities at each judge."""
+    print("\n=== Running Multi-Agent People Debate with Round Judges (probability view) ===")
 
     print("Round 1: Opening statements...")
     pol_open = opening_politician(claim, evidence)
     sci_open = opening_scientist(claim, evidence)
 
-    print("Round 1 Judge evaluation (MCQ)...")
+    print("Round 1 Judge evaluation (probabilities)...")
     round_1_judge = judge_round_1_mcq(claim, evidence, pol_open, sci_open)
 
     print("Round 2: Rebuttal statements...")
     pol_rebut = rebuttal_politician(claim, evidence, sci_open)
     sci_rebut = rebuttal_scientist(claim, evidence, pol_open)
 
-    print("Round 2 Judge evaluation (MCQ)...")
+    print("Round 2 Judge evaluation (probabilities)...")
     round_2_judge = judge_round_2_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
 
     print("Round 3: Closing statements...")
     pol_close = closing_politician(claim, evidence)
     sci_close = closing_scientist(claim, evidence)
 
-    print("Final Judge evaluation (MCQ)...")
+    print("Final Judge evaluation (probabilities)...")
     final_judge = judge_final_verdict_mcq(
         claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close
     )
