@@ -1,6 +1,8 @@
 from __future__ import annotations
 
-from typing import List, Tuple
+from typing import Any, List, Mapping, Tuple
+
+import torch
 
 
 def _get_tokenizer_name(tokenizer) -> str:
@@ -73,3 +75,14 @@ def extract_assistant_response(raw_text: str, used_chat_template: bool) -> str:
         return raw_text.split("<|assistant|>")[-1].strip()
 
     return raw_text.strip()
+
+
+def inference_generate(
+    model,
+    inputs: Mapping[str, Any],
+    **generate_kwargs,
+):
+    """Call `model.generate` in inference mode with no gradients."""
+    model.eval()
+    with torch.no_grad():
+        return model.generate(**inputs, **generate_kwargs)

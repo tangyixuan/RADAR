@@ -106,7 +106,7 @@ def run_multi_agent_people_bj(claim, evidence, model_info):
 
 
 def run_multi_agent_people_fj(claim, evidence, model_info):
-    from agents.multi_agent_people_fj import set_model_info, run_multi_agent_people_fj as run_people_fj
+    from agents.multi_agent_people_fj_test import set_model_info, run_multi_agent_people_fj as run_people_fj
     set_model_info(model_info)
 
     print("\n=== Running Multi-Agent People Debate (Front-Round Judge) ===")

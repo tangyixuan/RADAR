@@ -1,3 +1,8 @@
+import math
+from typing import Dict
+
+import torch
+
 from model.loader import load_model
 from prompts.templates_people import (
     get_system_prompt,
@@ -9,10 +14,16 @@ from prompts.templates_people import (
     scientist_closing_prompt,
     judge_prompt,
 )
-from agents.chat_template_utils import build_chat_prompt, extract_assistant_response
+from agents.chat_template_utils import (
+    build_chat_prompt,
+    extract_assistant_response,
+    inference_generate,
+)
 
 # Global model info - will be set by main.py
 model_info = None
+
+CONTINUATION_CHOICES = ("STOP", "CONTINUE")
 
 
 def set_model_info(info):
@@ -21,7 +32,12 @@ def set_model_info(info):
     model_info = info
 
 
-def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
+def run_model(
+    system_prompt: str,
+    user_prompt: str,
+    max_tokens: int = 300,
+    collect_scores: bool = False,
+):
     """Run model inference based on model type"""
     if model_info is None:
         raise ValueError("Model not loaded. Please call set_model_info() first.")
@@ -43,7 +59,11 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
                 max_tokens=max_tokens,
                 temperature=0.7,
             )
-            return response.choices[0].message.content.strip()
+            content = response.choices[0].message.content.strip()
+            if collect_scores:
+                print("Warning: collect_scores not supported for GPT models; falling back to recomputation.")
+                return content, None
+            return content
 
         else:
             # Local model: (tokenizer, model)
@@ -51,16 +71,306 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
 
             text, used_chat_template = build_chat_prompt(tokenizer, system_prompt, user_prompt)
             inputs = tokenizer([text], return_tensors="pt").to(model.device)
-            outputs = model.generate(
-                **inputs,
-                max_new_tokens=max_tokens,
-                do_sample=False,
-                eos_token_id=tokenizer.eos_token_id,
+            generate_kwargs = {
+                "max_new_tokens": max_tokens,
+                "do_sample": False,
+                "use_cache": True,
+                "eos_token_id": tokenizer.eos_token_id,
+                "pad_token_id": tokenizer.eos_token_id,
+            }
+            if collect_scores:
+                outputs = inference_generate(
+                    model,
+                    inputs,
+                    return_dict_in_generate=True,
+                    output_scores=True,
+                    **generate_kwargs,
+                )
+                response = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
+                extracted = extract_assistant_response(response, used_chat_template)
+                input_length = inputs["input_ids"].shape[1]
+                generated_tokens = outputs.sequences[0][input_length:].tolist()
+                generation_info = {
+                    "scores": [score.detach().cpu() for score in outputs.scores],
+                    "generated_tokens": generated_tokens,
+                    "tokenizer": tokenizer,
+                }
+                return extracted, generation_info
+
+            outputs = inference_generate(
+                model,
+                inputs,
+                **generate_kwargs,
             )
             response = tokenizer.decode(outputs[0], skip_special_tokens=True)
             return extract_assistant_response(response, used_chat_template)
 
     raise ValueError("Invalid model_info format")
+
+
+# === Continuation scoring helpers ===
+
+def _logprobs_to_probabilities(logprob_map: Dict[str, float]) -> Dict[str, float]:
+    if not logprob_map:
+        return {}
+    max_logprob = max(logprob_map.values())
+    exp_map = {
+        choice: math.exp(logprob - max_logprob) if math.isfinite(logprob) else 0.0
+        for choice, logprob in logprob_map.items()
+    }
+    total = sum(exp_map.values())
+    return {choice: (value / total if total > 0 else 0.0) for choice, value in exp_map.items()}
+
+
+def _common_prefix_length(first: list[int], second: list[int]) -> int:
+    max_len = min(len(first), len(second))
+    idx = 0
+    while idx < max_len and first[idx] == second[idx]:
+        idx += 1
+    return idx
+
+
+def _compute_choice_logprobs_local(
+    tokenizer,
+    model,
+    system_prompt: str,
+    user_prompt: str,
+    assistant_context: str,
+    choices: tuple[str, ...],
+) -> tuple[Dict[str, float], Dict[str, str]]:
+    prompt_text, _ = build_chat_prompt(tokenizer, system_prompt, user_prompt)
+    base_text = prompt_text + assistant_context
+
+    base_encoding = tokenizer([base_text], return_tensors="pt")
+    base_ids = base_encoding["input_ids"][0].tolist()
+
+    choice_logprobs: Dict[str, float] = {}
+    choice_first_tokens: Dict[str, str] = {}
+
+    model_inputs = {k: v.to(model.device) for k, v in base_encoding.items()}
+    model.eval()
+    with torch.no_grad():
+        base_outputs = model(**model_inputs)
+        base_logits = base_outputs.logits[0, -1, :]
+        base_logprobs = torch.log_softmax(base_logits, dim=-1)
+
+        for choice in choices:
+            choice_text = base_text + choice
+            choice_encoding = tokenizer([choice_text], return_tensors="pt")
+            choice_ids = choice_encoding["input_ids"][0].tolist()
+
+            prefix_len = _common_prefix_length(base_ids, choice_ids)
+            if prefix_len >= len(choice_ids):
+                choice_logprobs[choice] = float("-inf")
+                choice_first_tokens[choice] = ""
+                continue
+
+            first_token_id = choice_ids[prefix_len]
+            token_logprob = float(base_logprobs[first_token_id].item())
+            choice_logprobs[choice] = token_logprob
+            choice_first_tokens[choice] = tokenizer.decode([first_token_id])
+
+    return choice_logprobs, choice_first_tokens
+
+
+def _compute_choice_logprobs_gpt(
+    client,
+    model_name: str,
+    system_prompt: str,
+    user_prompt: str,
+    assistant_context: str,
+    choices: tuple[str, ...],
+) -> tuple[Dict[str, float], Dict[str, str]]:
+    base_prompt = (
+        f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant: {assistant_context}"
+    )
+    base_length = len(base_prompt)
+
+    choice_logprobs: Dict[str, float] = {}
+    choice_first_tokens: Dict[str, str] = {}
+    for choice in choices:
+        prompt_with_choice = base_prompt + choice
+        response = client.completions.create(
+            model=model_name,
+            prompt=prompt_with_choice,
+            max_tokens=0,
+            temperature=0,
+            logprobs=1,
+            echo=True,
+        )
+        logprob_data = response.choices[0].logprobs
+        if logprob_data is None or logprob_data.tokens is None:
+            raise RuntimeError("Logprob data unavailable for continuation scoring.")
+
+        tokens = logprob_data.tokens
+        token_logprobs = logprob_data.token_logprobs
+        text_offsets = logprob_data.text_offset
+
+        recorded = False
+        for delta in (0, 1, 2):
+            first_idx = None
+            for idx, offset in enumerate(text_offsets):
+                if offset is not None and offset >= base_length - delta:
+                    first_idx = idx
+                    break
+
+            if first_idx is None:
+                continue
+
+            first_token_logprob = token_logprobs[first_idx]
+            first_token_text = tokens[first_idx]
+            if first_token_logprob is not None:
+                choice_logprobs[choice] = first_token_logprob
+            else:
+                choice_logprobs[choice] = float("-inf")
+            choice_first_tokens[choice] = first_token_text
+            recorded = True
+            break
+
+        if not recorded:
+            choice_logprobs[choice] = float("-inf")
+            choice_first_tokens[choice] = ""
+
+    return choice_logprobs, choice_first_tokens
+
+
+def compute_continuation_logprobs(
+    system_prompt: str,
+    user_prompt: str,
+    assistant_context: str,
+) -> tuple[Dict[str, float], Dict[str, str]]:
+    if model_info is None:
+        raise ValueError("Model not loaded. Please call set_model_info() first.")
+
+    if len(model_info) != 2:
+        raise ValueError("Invalid model_info format")
+
+    first, second = model_info
+    if isinstance(second, str):
+        client, model_name = model_info
+        return _compute_choice_logprobs_gpt(
+            client,
+            model_name,
+            system_prompt,
+            user_prompt,
+            assistant_context,
+            CONTINUATION_CHOICES,
+        )
+
+    tokenizer, model = model_info
+    return _compute_choice_logprobs_local(
+        tokenizer,
+        model,
+        system_prompt,
+        user_prompt,
+        assistant_context,
+        CONTINUATION_CHOICES,
+    )
+
+
+def _compute_choice_logprobs_from_generation(generation_info: Dict[str, object]) -> tuple[Dict[str, float], Dict[str, str]]:
+    tokenizer = generation_info.get("tokenizer")
+    scores = generation_info.get("scores")
+    generated_tokens = generation_info.get("generated_tokens")
+
+    if tokenizer is None or scores is None or generated_tokens is None:
+        raise ValueError("Incomplete generation info for continuation scoring.")
+
+    if not scores:
+        raise ValueError("Empty generation scores for continuation scoring.")
+
+    stop_token_ids = tokenizer.encode(" STOP", add_special_tokens=False)
+    continue_token_ids = tokenizer.encode(" CONTINUE", add_special_tokens=False)
+    if not stop_token_ids or not continue_token_ids:
+        raise ValueError("Failed to obtain STOP/CONTINUE token ids from tokenizer.")
+
+    stop_token_id = stop_token_ids[0]
+    continue_token_id = continue_token_ids[0]
+
+    decision_index = None
+    for idx, token_id in enumerate(generated_tokens):
+        if token_id in (stop_token_id, continue_token_id):
+            decision_index = idx
+            break
+
+    if decision_index is None or decision_index >= len(scores):
+        raise ValueError("Could not locate decision token in generated sequence.")
+
+    score_tensor = scores[decision_index][0]
+    log_probs = torch.log_softmax(score_tensor, dim=-1)
+
+    choice_logprobs = {
+        "STOP": float(log_probs[stop_token_id].item()),
+        "CONTINUE": float(log_probs[continue_token_id].item()),
+    }
+    choice_first_tokens = {
+        "STOP": tokenizer.decode([stop_token_id]),
+        "CONTINUE": tokenizer.decode([continue_token_id]),
+    }
+    return choice_logprobs, choice_first_tokens
+
+
+def _compute_continuation_probability_info(
+    user_prompt: str,
+    assistant_context: str = "DECISION: ",
+) -> Dict[str, object]:
+    return _compute_continuation_probability_info_with_generation(
+        user_prompt=user_prompt,
+        assistant_context=assistant_context,
+        generation_info=None,
+    )
+
+
+def _compute_continuation_probability_info_with_generation(
+    user_prompt: str,
+    assistant_context: str = "DECISION: ",
+    generation_info: Dict[str, object] | None = None,
+) -> Dict[str, object]:
+    if generation_info is not None:
+        try:
+            choice_logprobs, choice_first_tokens = _compute_choice_logprobs_from_generation(generation_info)
+            choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
+            predicted_decision = (
+                max(choice_probabilities, key=choice_probabilities.get)
+                if choice_probabilities
+                else None
+            )
+            return {
+                "choice_logprobs": choice_logprobs,
+                "choice_probabilities": choice_probabilities,
+                "predicted_decision": predicted_decision,
+                "choice_first_tokens": choice_first_tokens,
+            }
+        except Exception as exc:
+            print(f"Warning: generation-based continuation scoring failed: {exc}")
+
+    try:
+        choice_logprobs, choice_first_tokens = compute_continuation_logprobs(
+            get_system_prompt("judge"),
+            user_prompt,
+            assistant_context,
+        )
+    except Exception as exc:
+        print(f"Warning: continuation probability estimation failed: {exc}")
+        return {
+            "choice_logprobs": {},
+            "choice_probabilities": {},
+            "predicted_decision": None,
+            "choice_first_tokens": {},
+        }
+
+    choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
+    predicted_decision = (
+        max(choice_probabilities, key=choice_probabilities.get)
+        if choice_probabilities
+        else None
+    )
+    return {
+        "choice_logprobs": choice_logprobs,
+        "choice_probabilities": choice_probabilities,
+        "predicted_decision": predicted_decision,
+        "choice_first_tokens": choice_first_tokens,
+    }
 
 
 # === Politician Agent ===
@@ -157,7 +467,16 @@ REASON: <one or two sentences>
 
 def _should_continue_after_round(claim, evidence, round_name, transcripts, executed_rounds):
     prompt = _continuation_prompt_after_round(claim, evidence, round_name, transcripts, executed_rounds)
-    response = run_model(get_system_prompt("judge"), prompt, max_tokens=200)
+    response, generation_info = run_model(
+        get_system_prompt("judge"),
+        prompt,
+        max_tokens=200,
+        collect_scores=True,
+    )
+    probability_info = _compute_continuation_probability_info_with_generation(
+        prompt,
+        generation_info=generation_info,
+    )
 
     decision_line = ""
     for line in response.splitlines():
@@ -167,15 +486,15 @@ def _should_continue_after_round(claim, evidence, round_name, transcripts, execu
             break
 
     if "STOP" in decision_line and "CONTINUE" not in decision_line:
-        return False, response
+        return False, response, probability_info
     if "CONTINUE" in decision_line and "STOP" not in decision_line:
-        return True, response
+        return True, response, probability_info
 
     upper_response = response.upper()
     if "STOP" in upper_response and "CONTINUE" not in upper_response:
-        return False, response
+        return False, response, probability_info
 
-    return True, response
+    return True, response, probability_info
 
 
 def run_multi_agent_people_bj(claim, evidence):
@@ -191,7 +510,7 @@ def run_multi_agent_people_bj(claim, evidence):
     transcripts["opening"] = {"politician": pol_open, "scientist": sci_open}
     executed_rounds.append("opening")
 
-    continue_debate, decision_text = _should_continue_after_round(
+    continue_debate, decision_text, probability_info = _should_continue_after_round(
         claim, evidence, "opening", transcripts, executed_rounds
     )
     continuation_decisions.append(
@@ -199,6 +518,9 @@ def run_multi_agent_people_bj(claim, evidence):
             "round": "opening",
             "decision": "continue" if continue_debate else "stop",
             "rationale": decision_text,
+            "choice_logprobs": probability_info.get("choice_logprobs"),
+            "choice_probabilities": probability_info.get("choice_probabilities"),
+            "choice_first_tokens": probability_info.get("choice_first_tokens"),
         }
     )
 
@@ -212,7 +534,7 @@ def run_multi_agent_people_bj(claim, evidence):
         transcripts["rebuttal"] = {"politician": pol_rebut, "scientist": sci_rebut}
         executed_rounds.append("rebuttal")
 
-        continue_debate, decision_text = _should_continue_after_round(
+        continue_debate, decision_text, probability_info = _should_continue_after_round(
             claim, evidence, "rebuttal", transcripts, executed_rounds
         )
         continuation_decisions.append(
@@ -220,6 +542,9 @@ def run_multi_agent_people_bj(claim, evidence):
                 "round": "rebuttal",
                 "decision": "continue" if continue_debate else "stop",
                 "rationale": decision_text,
+                "choice_logprobs": probability_info.get("choice_logprobs"),
+                "choice_probabilities": probability_info.get("choice_probabilities"),
+                "choice_first_tokens": probability_info.get("choice_first_tokens"),
             }
         )
 

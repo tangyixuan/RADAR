@@ -15,7 +15,11 @@ from prompts.templates_pcj_3 import (
     user_prompt_rebuttal_journalist,
     user_prompt_closing_journalist
 )
-from agents.chat_template_utils import build_chat_prompt, extract_assistant_response
+from agents.chat_template_utils import (
+    build_chat_prompt,
+    extract_assistant_response,
+    inference_generate,
+)
 
 # Global model info - will be set by main.py
 model_info = None
@@ -55,11 +59,17 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
 
             text, used_chat_template = build_chat_prompt(tokenizer, system_prompt, user_prompt)
             inputs = tokenizer([text], return_tensors="pt").to(model.device)
-            outputs = model.generate(
-                **inputs,
-                max_new_tokens=max_tokens,
-                do_sample=False,
-                eos_token_id=tokenizer.eos_token_id
+            generate_kwargs = {
+                "max_new_tokens": max_tokens,
+                "do_sample": False,
+                "use_cache": True,
+                "eos_token_id": tokenizer.eos_token_id,
+                "pad_token_id": tokenizer.eos_token_id,
+            }
+            outputs = inference_generate(
+                model,
+                inputs,
+                **generate_kwargs,
             )
             response = tokenizer.decode(outputs[0], skip_special_tokens=True)
             return extract_assistant_response(response, used_chat_template)

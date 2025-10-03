@@ -1,0 +1,138 @@
+Loading llama model...
+Model loaded successfully: llama
+Loading input file: data/feverous_golden_evidence_new2.json
+Output will be saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processing 7890 examples in multi_people mode with llama model
+Found existing results file with 2487 completed examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 103 processed in 26.78 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2488 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 27504 processed in 24.38 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2489 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 15830 processed in 26.63 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2490 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 3645 processed in 29.54 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2491 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 12988 processed in 23.96 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2492 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 10985 processed in 26.48 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2493 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 39590 processed in 24.00 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2494 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 2079 processed in 26.60 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2495 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 9989 processed in 29.49 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2496 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 21144 processed in 24.16 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2497 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 5650 processed in 25.35 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2498 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 7431 processed in 23.68 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2499 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 10336 processed in 26.27 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2500 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 8731 processed in 26.46 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2501 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 7663 processed in 28.23 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2502 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 531 processed in 24.98 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2503 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 602 processed in 26.91 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2504 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 24320 processed in 28.55 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2505 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 727 processed in 24.86 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2506 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 15352 processed in 25.68 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2507 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 18488 processed in 26.37 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2508 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 29724 processed in 22.90 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2509 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 3424 processed in 27.99 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2510 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 9573 processed in 23.99 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2511 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 11164 processed in 26.73 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2512 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===
+Claim 22036 processed in 24.57 seconds
+Results saved to: data/feverous_golden_evidence_new2_answer_map_multi_people_llama.json
+Processed 2513 examples
+
+=== Running Multi-Agent People Debate (Politician vs Scientist) ===

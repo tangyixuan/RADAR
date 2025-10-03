@@ -1,0 +1,6 @@
+Loading llama model...
+Model loaded successfully: llama
+Loading input file: data/matching_evidence_full.json
+Output will be saved to: data/matching_evidence_full_answer_map_multi_people_bj_llama.json
+Processing 150 examples in multi_people_bj mode with llama model
+No existing results file found, starting from scratch...

@@ -11,11 +11,15 @@ from prompts.templates_people import (
     judge_prompt_1r,
     judge_prompt_2r
 )
-from agents.chat_template_utils import build_chat_prompt, extract_assistant_response
+from agents.chat_template_utils import (
+    build_chat_prompt,
+    extract_assistant_response,
+    inference_generate,
+)
 import torch
 import math
 import re
-from typing import Dict
+from typing import Dict, List, Optional, Tuple
 
 # Global model info - will be set by main.py
 model_info = None
@@ -33,138 +37,199 @@ def set_model_info(info):
     global model_info
     model_info = info
 
+def _extract_verdict_label(response_text: str) -> str:
+    """Extract the verdict label from the model response text."""
+    verdict = "UNKNOWN"
+    patterns = [
+        r"\[VERDICT\]:\s*(TRUE|FALSE|HALF-TRUE)",
+        r"VERDICT:\s*(TRUE|FALSE|HALF-TRUE)",
+        r"\b(TRUE|FALSE|HALF-TRUE)\b",
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, response_text, re.IGNORECASE)
+        if match:
+            verdict = match.group(1).upper()
+            break
+    return verdict
+
+
+def _find_last_subsequence(haystack: List[int], needle: List[int]) -> Optional[int]:
+    """Return the starting index of the last occurrence of needle within haystack."""
+    if not haystack or not needle or len(needle) > len(haystack):
+        return None
+    for idx in range(len(haystack) - len(needle), -1, -1):
+        if haystack[idx: idx + len(needle)] == needle:
+            return idx
+    return None
+
+
+def _label_token_variants(tokenizer, label: str) -> List[List[int]]:
+    """Return plausible token sequences for a label with different leading characters."""
+    prefixes = [" ", "\n", "\n ", ""]
+    variants: List[List[int]] = []
+    seen: set[Tuple[int, ...]] = set()
+    for prefix in prefixes:
+        tokens = tokenizer.encode(prefix + label, add_special_tokens=False)
+        if tokens:
+            token_tuple = tuple(tokens)
+            if token_tuple not in seen:
+                seen.add(token_tuple)
+                variants.append(tokens)
+    return variants
+
+
+def _compute_verdict_probability_info_from_generation(
+    response_text: str,
+    generation_info: Dict[str, object],
+    choices: Tuple[str, ...] = MCQ_CHOICES,
+) -> Dict[str, object]:
+    """Compute per-choice logprobs using generation scores captured during decoding."""
+    tokenizer = generation_info.get("tokenizer")
+    scores = generation_info.get("scores")
+    generated_tokens = generation_info.get("generated_tokens")
+
+    if tokenizer is None or scores is None or generated_tokens is None:
+        raise ValueError("Incomplete generation info for verdict probability computation.")
+
+    if not isinstance(generated_tokens, (list, tuple)):
+        raise ValueError("generated_tokens must be a list or tuple of token ids.")
+
+    score_list: List[torch.Tensor] = []
+    for score in scores:
+        if isinstance(score, torch.Tensor):
+            score_list.append(score.detach().cpu())
+        else:
+            score_list.append(torch.tensor(score))
+
+    if not score_list:
+        raise ValueError("Empty score list for verdict probability computation.")
+
+    generated_token_ids = list(generated_tokens)
+
+    label_positions: Dict[str, Tuple[int, List[int]]] = {}
+    for label in choices:
+        variants = _label_token_variants(tokenizer, label)
+        for variant in variants:
+            position = _find_last_subsequence(generated_token_ids, variant)
+            if position is None:
+                continue
+            stored = label_positions.get(label)
+            if stored is None or position > stored[0]:
+                label_positions[label] = (position, variant)
+
+    if not label_positions:
+        raise ValueError("Failed to locate any verdict label tokens in generated sequence.")
+
+    extracted_verdict = _extract_verdict_label(response_text)
+    target_label = MCQ_VERDICT_MAP.get(extracted_verdict, extracted_verdict)
+    if target_label not in label_positions:
+        target_label = max(label_positions.items(), key=lambda item: item[1][0])[0]
+
+    decision_index, matched_sequence = label_positions[target_label]
+    if decision_index >= len(score_list):
+        raise ValueError("Decision token index exceeds available score tensors.")
+
+    score_tensor = score_list[decision_index]
+    if score_tensor.ndim == 2:
+        score_tensor = score_tensor[0]
+    log_probs = torch.log_softmax(score_tensor, dim=-1)
+
+    choice_logprobs: Dict[str, float] = {}
+    choice_first_tokens: Dict[str, str] = {}
+    first_token_ids: Dict[str, int] = {}
+    for label in choices:
+        variants = _label_token_variants(tokenizer, label)
+        if not variants:
+            raise ValueError(f"Failed to obtain token ids for verdict label '{label}'.")
+        first_token_id = variants[0][0]
+        first_token_ids[label] = first_token_id
+        choice_logprobs[label] = float(log_probs[first_token_id].item())
+        choice_first_tokens[label] = tokenizer.decode([first_token_id])
+
+    choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
+    predicted_choice = (
+        max(choice_probabilities, key=choice_probabilities.get)
+        if choice_probabilities
+        else None
+    )
+
+    verdict_logprobs = {
+        MCQ_VERDICT_MAP[label]: logprob for label, logprob in choice_logprobs.items()
+    }
+    verdict_probabilities = {
+        MCQ_VERDICT_MAP[label]: prob for label, prob in choice_probabilities.items()
+    }
+
+    return {
+        "choice_logprobs": choice_logprobs,
+        "choice_probabilities": choice_probabilities,
+        "choice_first_tokens": choice_first_tokens,
+        "first_token_ids": first_token_ids,
+        "predicted_verdict": MCQ_VERDICT_MAP.get(predicted_choice, predicted_choice),
+        "verdict_logprobs": verdict_logprobs,
+        "verdict_probabilities": verdict_probabilities,
+        "extracted_verdict": extracted_verdict,
+        "decision_index": decision_index,
+        "matched_sequence": matched_sequence,
+        "matched_label": target_label,
+    }
+
+
 def extract_verdict_and_probability(response_text, logprobs=None, scores=None, tokenizer=None, generated_tokens=None):
     """Extract verdict and probability from judge response"""
-    import re
-    import torch
-    import torch.nn.functional as F
-    import math
-    
-    # Extract verdict - try multiple patterns
-    verdict = "UNKNOWN"
-    
-    # Pattern 1: [VERDICT]: TRUE/FALSE/HALF-TRUE
-    verdict_match = re.search(r'\[VERDICT\]:\s*(TRUE|FALSE|HALF-TRUE)', response_text, re.IGNORECASE)
-    if verdict_match:
-        verdict = verdict_match.group(1).upper()
-    else:
-        # Pattern 2: VERDICT: TRUE/FALSE/HALF-TRUE (without brackets)
-        verdict_match = re.search(r'VERDICT:\s*(TRUE|FALSE|HALF-TRUE)', response_text, re.IGNORECASE)
-        if verdict_match:
-            verdict = verdict_match.group(1).upper()
-        else:
-            # Pattern 3: Just look for TRUE/FALSE/HALF-TRUE at the end
-            verdict_match = re.search(r'\b(TRUE|FALSE|HALF-TRUE)\b', response_text, re.IGNORECASE)
-            if verdict_match:
-                verdict = verdict_match.group(1).upper()
-    
+    verdict = _extract_verdict_label(response_text)
     print(f"Extracted verdict: {verdict} from text ending: ...{response_text[-100:]}")  # Debug print
-    
+
     probability = None
-    print(f"Starting probability extraction - logprobs: {logprobs is not None}, scores: {scores is not None}, tokenizer: {tokenizer is not None}, tokens: {generated_tokens is not None}")
-    
-    # Try to extract probability from logprobs (OpenAI)
-    if logprobs is not None:
+    print(
+        "Starting probability extraction - logprobs: "
+        f"{logprobs is not None}, scores: {scores is not None}, "
+        f"tokenizer: {tokenizer is not None}, tokens: {generated_tokens is not None}"
+    )
+
+    probability_info: Optional[Dict[str, object]] = None
+
+    if scores is not None and tokenizer is not None and generated_tokens is not None:
         try:
-            # Find the verdict token in the logprobs
+            generation_info = {
+                "scores": list(scores) if isinstance(scores, (list, tuple)) else scores,
+                "tokenizer": tokenizer,
+                "generated_tokens": generated_tokens,
+            }
+            probability_info = _compute_verdict_probability_info_from_generation(
+                response_text,
+                generation_info,
+            )
+            mapped_verdict = MCQ_VERDICT_MAP.get(verdict, verdict)
+            probability = probability_info["verdict_probabilities"].get(mapped_verdict)
+        except Exception as exc:
+            print(f"Warning: generation-based verdict probability extraction failed: {exc}")
+
+    elif logprobs is not None:
+        try:
             verdict_tokens = ["TRUE", "FALSE", "HALF-TRUE"]
             for token_logprob in logprobs:
                 if token_logprob.token in verdict_tokens:
-                    # Convert log probability to probability
                     probability = math.exp(token_logprob.logprob)
-                    print(f"Found verdict token '{token_logprob.token}' with probability: {probability}")
+                    print(
+                        f"Found verdict token '{token_logprob.token}' with probability: {probability}"
+                    )
                     break
-        except Exception as e:
-            print(f"Warning: Could not extract probability from logprobs: {e}")
-    
-    # Try to extract probability from scores (Hugging Face) - improved method
-    elif scores is not None and tokenizer is not None and generated_tokens is not None:
-        try:
-            print(f"Scores type: {type(scores)}, is tuple: {isinstance(scores, tuple)}")
-            
-            # Handle tuple of scores (from model.generate with output_scores=True)
-            if isinstance(scores, tuple):
-                print(f"Scores tuple length: {len(scores)}")
-                
-                # Get verdict token IDs for each verdict word
-                verdict_token_ids = {}
-                for verdict_word in ["TRUE", "FALSE", "HALF-TRUE"]:
-                    tokens = tokenizer.encode(verdict_word, add_special_tokens=False)
-                    verdict_token_ids[verdict_word] = tokens
-                
-                print(f"Verdict token IDs: {verdict_token_ids}")
-                print(f"Generated tokens (first 20): {generated_tokens[:20]}")
-                
-                # Find verdict tokens in generated sequence and calculate their probabilities
-                verdict_probs = []
-                
-                for i, score_tensor in enumerate(scores):
-                    # score_tensor is the logits for step i (shape: [batch_size, vocab_size])
-                    if i < len(generated_tokens):
-                        token_id = generated_tokens[i]
-                        
-                        # Check if this token is part of any verdict
-                        is_verdict_token = False
-                        for verdict_word, token_list in verdict_token_ids.items():
-                            if token_id in token_list:
-                                is_verdict_token = True
-                                break
-                        
-                        if is_verdict_token:
-                            # Calculate probability for this token
-                            token_probs = F.softmax(score_tensor, dim=-1)
-                            token_prob = token_probs[0, token_id].item()
-                            verdict_probs.append(token_prob)
-                            token_text = tokenizer.decode([token_id])
-                            print(f"Step {i}: Token {token_id} ('{token_text}') probability: {token_prob:.4f}")
-                
-                if verdict_probs:
-                    # Calculate geometric mean (equivalent to exp(mean(log_probs)))
-                    # This is the most theoretically sound for joint probability of multi-token sequences
-                    import math
-                    probability = math.exp(sum(math.log(p) for p in verdict_probs) / len(verdict_probs))
-                    
-                    print(f"✅ Verdict token probabilities: {[f'{p:.4f}' for p in verdict_probs]}")
-                    print(f"   Final probability (geometric mean): {probability:.4f}")
-                else:
-                    print(f"⚠️ No verdict tokens found in generated sequence")
-                    print(f"   Expected verdict: {verdict}")
-                    print(f"   Looking for token IDs in: {verdict_token_ids.get(verdict, 'Not found')}")
-                    print(f"   Generated tokens (first 50): {generated_tokens[:50]}")
-                    
-                    # Fallback: use average probability of last few tokens as confidence estimate
-                    if len(scores) > 0:
-                        print(f"   Attempting fallback: using last tokens' confidence")
-                        last_n = min(5, len(scores))
-                        last_probs = []
-                        for i in range(len(scores) - last_n, len(scores)):
-                            token_logits = scores[i]
-                            token_probs_dist = F.softmax(token_logits, dim=-1)
-                            max_prob = torch.max(token_probs_dist).item()
-                            last_probs.append(max_prob)
-                        if last_probs:
-                            probability = sum(last_probs) / len(last_probs)
-                            print(f"   Fallback probability (avg of last {last_n} tokens): {probability:.4f}")
-            else:
-                print(f"Scores is not a tuple, type: {type(scores)}")
-                    
-        except Exception as e:
-            print(f"Warning: Could not extract probability from scores: {e}")
-            import traceback
-            traceback.print_exc()
-    
-    # Fallback: use maximum probability of last token as confidence proxy
-    elif scores is not None:
+        except Exception as exc:
+            print(f"Warning: Could not extract probability from logprobs: {exc}")
+
+    if probability is None and probability_info is None and scores is not None:
         try:
             if len(scores) > 0:
-                last_scores = scores[-1]  # Get scores for the last generated token
+                last_scores = scores[-1]
+                if isinstance(last_scores, torch.Tensor) and last_scores.ndim == 2:
+                    last_scores = last_scores[0]
                 probabilities = torch.softmax(last_scores, dim=-1)
-                # Get the maximum probability as a proxy for confidence
                 probability = float(torch.max(probabilities).item())
                 print(f"Fallback: Using max probability of last token: {probability}")
-        except Exception as e:
-            print(f"Warning: Could not extract probability from scores (fallback): {e}")
-    
+        except Exception as exc:
+            print(f"Warning: Could not extract probability from scores (fallback): {exc}")
+
     return verdict, probability
 
 def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300, get_probabilities: bool = False):
@@ -225,13 +290,19 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300, get_p
             inputs = tokenizer([text], return_tensors="pt").to(model.device)
             
             if get_probabilities:
-                outputs = model.generate(
-                    **inputs,
-                    max_new_tokens=max_tokens,
-                    do_sample=False,
-                    eos_token_id=tokenizer.eos_token_id,
+                generate_kwargs = {
+                    "max_new_tokens": max_tokens,
+                    "do_sample": False,
+                    "use_cache": True,
+                    "eos_token_id": tokenizer.eos_token_id,
+                    "pad_token_id": tokenizer.eos_token_id,
+                }
+                outputs = inference_generate(
+                    model,
+                    inputs,
                     return_dict_in_generate=True,
-                    output_scores=True
+                    output_scores=True,
+                    **generate_kwargs,
                 )
                 response = tokenizer.decode(outputs.sequences[0], skip_special_tokens=True)
                 extracted_response = extract_assistant_response(response, used_chat_template)
@@ -246,13 +317,25 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300, get_p
                     print(f"Scores type: {type(outputs.scores)}, length: {len(outputs.scores)}")
                     print(f"Generated tokens: {generated_tokens}")
                 
-                return extracted_response, (outputs.scores, tokenizer, generated_tokens)
+                score_list = [score.detach().cpu() for score in outputs.scores] if outputs.scores else []
+                generation_info = {
+                    "scores": score_list,
+                    "tokenizer": tokenizer,
+                    "generated_tokens": generated_tokens,
+                }
+                return extracted_response, generation_info
             else:
-                outputs = model.generate(
-                    **inputs,
-                    max_new_tokens=max_tokens,
-                    do_sample=False,
-                    eos_token_id=tokenizer.eos_token_id
+                generate_kwargs = {
+                    "max_new_tokens": max_tokens,
+                    "do_sample": False,
+                    "use_cache": True,
+                    "eos_token_id": tokenizer.eos_token_id,
+                    "pad_token_id": tokenizer.eos_token_id,
+                }
+                outputs = inference_generate(
+                    model,
+                    inputs,
+                    **generate_kwargs,
                 )
                 response = tokenizer.decode(outputs[0], skip_special_tokens=True)
                 return extract_assistant_response(response, used_chat_template)
@@ -291,63 +374,6 @@ def _logprobs_to_probabilities(logprob_map: Dict[str, float]) -> Dict[str, float
     exp_map = {choice: math.exp(logprob - max_logprob) for choice, logprob in logprob_map.items()}
     total = sum(exp_map.values())
     return {choice: (value / total if total > 0 else 0.0) for choice, value in exp_map.items()}
-
-
-def _common_prefix_length(first: list[int], second: list[int]) -> int:
-    """Return the length of the longest shared prefix between two token id lists."""
-    max_len = min(len(first), len(second))
-    idx = 0
-    while idx < max_len and first[idx] == second[idx]:
-        idx += 1
-    return idx
-
-
-def _compute_choice_logprobs_local(tokenizer, model, system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
-    """Compute per-choice average log-probabilities for local models (handles multi-token labels)."""
-    prompt_text, _ = build_chat_prompt(tokenizer, system_prompt, user_prompt)
-    base_text = prompt_text + assistant_context
-
-    base_encoding = tokenizer([base_text], return_tensors="pt")
-    base_ids = base_encoding["input_ids"][0].tolist()
-
-    choice_logprobs: Dict[str, float] = {}
-    model.eval()
-    with torch.no_grad():
-        for choice in MCQ_CHOICES:
-            choice_text = base_text + choice
-            choice_encoding = tokenizer([choice_text], return_tensors="pt")
-            choice_ids = choice_encoding["input_ids"][0].tolist()
-
-            prefix_len = _common_prefix_length(base_ids, choice_ids)
-
-            labels = choice_encoding["input_ids"].clone()
-            labels[:, :prefix_len] = -100
-            if tokenizer.pad_token_id is not None:
-                labels[labels == tokenizer.pad_token_id] = -100
-
-            token_count = int((labels != -100).sum().item())
-            if token_count == 0:
-                choice_logprobs[choice] = float("-inf")
-                continue
-
-            choice_inputs = {k: v.to(model.device) for k, v in choice_encoding.items()}
-            labels = labels.to(model.device)
-
-            model_kwargs = {
-                "input_ids": choice_inputs["input_ids"],
-                "labels": labels,
-            }
-            if "attention_mask" in choice_inputs:
-                model_kwargs["attention_mask"] = choice_inputs["attention_mask"]
-            if "position_ids" in choice_inputs:
-                model_kwargs["position_ids"] = choice_inputs["position_ids"]
-
-            outputs = model(**model_kwargs)
-
-            sum_logprob = -outputs.loss.item() * token_count
-            choice_logprobs[choice] = sum_logprob / token_count
-
-    return choice_logprobs
 
 
 def _compute_choice_logprobs_gpt(client, model_name: str, system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
@@ -421,14 +447,33 @@ def compute_choice_logprobs(system_prompt: str, user_prompt: str, assistant_cont
         client, model_name = model_info
         return _compute_choice_logprobs_gpt(client, model_name, system_prompt, user_prompt, assistant_context)
 
-    tokenizer, model = model_info
-    return _compute_choice_logprobs_local(tokenizer, model, system_prompt, user_prompt, assistant_context)
+    raise RuntimeError(
+        "Local model MCQ scoring requires generation_info scores; direct recomputation path has been removed."
+    )
 
 
-def _compute_verdict_probability_info(user_prompt: str, assistant_context: str) -> Dict[str, object]:
-    """Compute verdict token probabilities given context."""
+def _compute_verdict_probability_info(
+    user_prompt: str,
+    assistant_context: str,
+    generation_info: Optional[Dict[str, object]] = None,
+    response_text: Optional[str] = None,
+) -> Dict[str, object]:
+    """Compute verdict probabilities, preferring generation scores when available."""
+    if generation_info is not None and response_text is not None:
+        try:
+            info = _compute_verdict_probability_info_from_generation(response_text, generation_info)
+            if info.get("choice_logprobs"):
+                return info
+        except Exception as exc:
+            print(f"Warning: generation-based verdict probability computation failed: {exc}")
+
     system_prompt = get_system_prompt("judge")
-    choice_logprobs = compute_choice_logprobs(system_prompt, user_prompt, assistant_context)
+    try:
+        choice_logprobs = compute_choice_logprobs(system_prompt, user_prompt, assistant_context)
+    except RuntimeError as exc:
+        raise RuntimeError(
+            "Generation scores missing for local model MCQ scoring; rerun with get_probabilities=True to capture generation_info."
+        ) from exc
 
     verdict_logprobs = {
         MCQ_VERDICT_MAP[choice]: logprob for choice, logprob in choice_logprobs.items()
@@ -441,6 +486,7 @@ def _compute_verdict_probability_info(user_prompt: str, assistant_context: str) 
         "verdict_probabilities": verdict_probabilities,
         "verdict_logprobs": verdict_logprobs,
         "choice_logprobs": choice_logprobs,
+        "choice_probabilities": _logprobs_to_probabilities(choice_logprobs),
     }
 
 # === Politician Agent ===
@@ -478,54 +524,102 @@ def judge_round_1(claim, evidence, pol_open, sci_open):
     if isinstance(result, tuple):
         response, probability_data = result
         print(f"Round 1 - Got probability data type: {type(probability_data)}")  # Debug print
-        
-        # Handle different probability data formats
-        if probability_data is not None:
-            if isinstance(probability_data, tuple) and len(probability_data) == 3:
-                # New format: (scores, tokenizer, generated_tokens)
-                scores, tokenizer, generated_tokens = probability_data
-                verdict, probability = extract_verdict_and_probability(
-                    response, scores=scores, tokenizer=tokenizer, generated_tokens=generated_tokens
-                )
-            elif hasattr(probability_data, '__iter__') and not isinstance(probability_data, torch.Tensor):
-                # It's logprobs (OpenAI format)
-                verdict, probability = extract_verdict_and_probability(response, logprobs=probability_data)
-            elif isinstance(probability_data, torch.Tensor):
-                # It's scores (Hugging Face format - old format)
-                verdict, probability = extract_verdict_and_probability(response, scores=probability_data)
-            else:
-                # Unknown format, try without probability data
-                verdict, probability = extract_verdict_and_probability(response)
-        else:
-            verdict, probability = extract_verdict_and_probability(response)
     else:
         response = result
-        verdict, probability = extract_verdict_and_probability(response)
-    
-    return {
+        probability_data = None
+
+    generation_info: Optional[Dict[str, object]] = None
+    logprob_data = None
+    score_tensor_data = None
+
+    if probability_data is not None:
+        if isinstance(probability_data, dict):
+            generation_info = probability_data
+        elif isinstance(probability_data, tuple) and len(probability_data) == 3:
+            scores, tokenizer, generated_tokens = probability_data
+            generation_info = {
+                "scores": list(scores) if isinstance(scores, (list, tuple)) else scores,
+                "tokenizer": tokenizer,
+                "generated_tokens": generated_tokens,
+            }
+        elif hasattr(probability_data, "__iter__") and not isinstance(probability_data, torch.Tensor):
+            logprob_data = probability_data
+        elif isinstance(probability_data, torch.Tensor):
+            score_tensor_data = probability_data
+
+    reason_section = _extract_reason_section(response)
+    reason_context = reason_section.rstrip("\n ")
+    assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
+
+    probability_info = _compute_verdict_probability_info(
+        user_prompt=prompt,
+        assistant_context=assistant_context,
+        generation_info=generation_info,
+        response_text=response,
+    )
+
+    verdict = _extract_verdict_label(response)
+    if verdict == "UNKNOWN":
+        fallback_verdict, _ = extract_verdict_and_probability(
+            response,
+            logprobs=logprob_data,
+            scores=score_tensor_data,
+        )
+        if fallback_verdict != "UNKNOWN":
+            verdict = fallback_verdict
+        elif probability_info.get("predicted_verdict"):
+            verdict = probability_info["predicted_verdict"]
+
+    mapped_verdict = MCQ_VERDICT_MAP.get(verdict, verdict)
+    probability = probability_info.get("verdict_probabilities", {}).get(mapped_verdict)
+    if probability is None and probability_info.get("predicted_verdict"):
+        probability = probability_info["verdict_probabilities"].get(
+            probability_info["predicted_verdict"]
+        )
+
+    base_result = {
+        "verdict_text": response,
         "response": response,
         "verdict": verdict,
-        "probability": probability
+        "probability": probability,
+        "probability_info": probability_info,
+        "reason_section": reason_section.strip(),
+        "generation_info": None,
     }
+
+    return base_result
 
 
 def judge_round_1_mcq(claim, evidence, pol_open, sci_open):
     base_result = judge_round_1(claim, evidence, pol_open, sci_open)
-
-    reason_section = _extract_reason_section(base_result["response"])
-    reason_context = reason_section.rstrip("\n ")
+    reason_section = base_result.get("reason_section") or _extract_reason_section(base_result.get("verdict_text", ""))
+    reason_context = reason_section.rstrip("\n ") if reason_section else ""
     assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
     user_prompt = judge_prompt_1r(claim, evidence, pol_open, sci_open)
-    probability_info = _compute_verdict_probability_info(user_prompt, assistant_context)
+
+    probability_info = base_result.get("probability_info") or {}
+    generation_info = base_result.get("generation_info")
+    if not probability_info.get("choice_logprobs"):
+        probability_info = _compute_verdict_probability_info(
+            user_prompt,
+            assistant_context,
+            generation_info=generation_info,
+            response_text=base_result.get("verdict_text"),
+        )
+
+    choice_logprobs = probability_info.get("choice_logprobs") if probability_info else None
+    choice_probabilities = probability_info.get("choice_probabilities") if probability_info else None
+    if choice_probabilities is None and choice_logprobs:
+        choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
 
     augmented_result = dict(base_result)
     augmented_result.update({
-        "reason_section": reason_section.strip(),
-        "probabilistic_verdict": probability_info["predicted_verdict"],
-        "verdict_probabilities": probability_info["verdict_probabilities"],
-        "verdict_logprobs": probability_info["verdict_logprobs"],
-        "choice_logprobs": probability_info["choice_logprobs"],
-        "choice_probabilities": _logprobs_to_probabilities(probability_info["choice_logprobs"]),
+        "reason_section": (reason_section or "").strip(),
+        "probabilistic_verdict": probability_info.get("predicted_verdict"),
+        "verdict_probabilities": probability_info.get("verdict_probabilities"),
+        "verdict_logprobs": probability_info.get("verdict_logprobs"),
+        "choice_logprobs": choice_logprobs,
+        "choice_probabilities": choice_probabilities,
     })
 
     return augmented_result
@@ -538,53 +632,102 @@ def judge_round_2(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut):
     if isinstance(result, tuple):
         response, probability_data = result
         print(f"Round 2 - Got probability data type: {type(probability_data)}")  # Debug print
-        
-        # Handle different probability data formats
-        if probability_data is not None:
-            if isinstance(probability_data, tuple) and len(probability_data) == 3:
-                # New format: (scores, tokenizer, generated_tokens)
-                scores, tokenizer, generated_tokens = probability_data
-                verdict, probability = extract_verdict_and_probability(
-                    response, scores=scores, tokenizer=tokenizer, generated_tokens=generated_tokens
-                )
-            elif hasattr(probability_data, '__iter__') and not isinstance(probability_data, torch.Tensor):
-                # It's logprobs (OpenAI format)
-                verdict, probability = extract_verdict_and_probability(response, logprobs=probability_data)
-            elif isinstance(probability_data, torch.Tensor):
-                # It's scores (Hugging Face format - old format)
-                verdict, probability = extract_verdict_and_probability(response, scores=probability_data)
-            else:
-                # Unknown format, try without probability data
-                verdict, probability = extract_verdict_and_probability(response)
-        else:
-            verdict, probability = extract_verdict_and_probability(response)
     else:
         response = result
-        verdict, probability = extract_verdict_and_probability(response)
-    
-    return {
+        probability_data = None
+
+    generation_info: Optional[Dict[str, object]] = None
+    logprob_data = None
+    score_tensor_data = None
+
+    if probability_data is not None:
+        if isinstance(probability_data, dict):
+            generation_info = probability_data
+        elif isinstance(probability_data, tuple) and len(probability_data) == 3:
+            scores, tokenizer, generated_tokens = probability_data
+            generation_info = {
+                "scores": list(scores) if isinstance(scores, (list, tuple)) else scores,
+                "tokenizer": tokenizer,
+                "generated_tokens": generated_tokens,
+            }
+        elif hasattr(probability_data, "__iter__") and not isinstance(probability_data, torch.Tensor):
+            logprob_data = probability_data
+        elif isinstance(probability_data, torch.Tensor):
+            score_tensor_data = probability_data
+
+    reason_section = _extract_reason_section(response)
+    reason_context = reason_section.rstrip("\n ")
+    assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
+
+    probability_info = _compute_verdict_probability_info(
+        user_prompt=prompt,
+        assistant_context=assistant_context,
+        generation_info=generation_info,
+        response_text=response,
+    )
+
+    verdict = _extract_verdict_label(response)
+    if verdict == "UNKNOWN":
+        fallback_verdict, _ = extract_verdict_and_probability(
+            response,
+            logprobs=logprob_data,
+            scores=score_tensor_data,
+        )
+        if fallback_verdict != "UNKNOWN":
+            verdict = fallback_verdict
+        elif probability_info.get("predicted_verdict"):
+            verdict = probability_info["predicted_verdict"]
+
+    mapped_verdict = MCQ_VERDICT_MAP.get(verdict, verdict)
+    probability = probability_info.get("verdict_probabilities", {}).get(mapped_verdict)
+    if probability is None and probability_info.get("predicted_verdict"):
+        probability = probability_info["verdict_probabilities"].get(
+            probability_info["predicted_verdict"]
+        )
+
+    base_result = {
+        "verdict_text": response,
         "response": response,
         "verdict": verdict,
-        "probability": probability
+        "probability": probability,
+        "probability_info": probability_info,
+        "reason_section": reason_section.strip(),
+        "generation_info": None,
     }
+
+    return base_result
 
 
 def judge_round_2_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut):
     base_result = judge_round_2(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
-    reason_section = _extract_reason_section(base_result["response"])
-    reason_context = reason_section.rstrip("\n ")
+    reason_section = base_result.get("reason_section") or _extract_reason_section(base_result.get("verdict_text", ""))
+    reason_context = reason_section.rstrip("\n ") if reason_section else ""
     assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
     user_prompt = judge_prompt_2r(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
-    probability_info = _compute_verdict_probability_info(user_prompt, assistant_context)
+
+    probability_info = base_result.get("probability_info") or {}
+    generation_info = base_result.get("generation_info")
+    if not probability_info.get("choice_logprobs"):
+        probability_info = _compute_verdict_probability_info(
+            user_prompt,
+            assistant_context,
+            generation_info=generation_info,
+            response_text=base_result.get("verdict_text"),
+        )
+
+    choice_logprobs = probability_info.get("choice_logprobs") if probability_info else None
+    choice_probabilities = probability_info.get("choice_probabilities") if probability_info else None
+    if choice_probabilities is None and choice_logprobs:
+        choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
 
     augmented_result = dict(base_result)
     augmented_result.update({
-        "reason_section": reason_section.strip(),
-        "probabilistic_verdict": probability_info["predicted_verdict"],
-        "verdict_probabilities": probability_info["verdict_probabilities"],
-        "verdict_logprobs": probability_info["verdict_logprobs"],
-        "choice_logprobs": probability_info["choice_logprobs"],
-        "choice_probabilities": _logprobs_to_probabilities(probability_info["choice_logprobs"]),
+        "reason_section": (reason_section or "").strip(),
+        "probabilistic_verdict": probability_info.get("predicted_verdict"),
+        "verdict_probabilities": probability_info.get("verdict_probabilities"),
+        "verdict_logprobs": probability_info.get("verdict_logprobs"),
+        "choice_logprobs": choice_logprobs,
+        "choice_probabilities": choice_probabilities,
     })
 
     return augmented_result
@@ -602,43 +745,78 @@ def judge_final_verdict(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebu
     if isinstance(result, tuple):
         response, probability_data = result
         print(f"Final - Got probability data type: {type(probability_data)}")  # Debug print
-        
-        # Handle different probability data formats
-        if probability_data is not None:
-            if isinstance(probability_data, tuple) and len(probability_data) == 3:
-                # New format: (scores, tokenizer, generated_tokens)
-                scores, tokenizer, generated_tokens = probability_data
-                verdict, probability = extract_verdict_and_probability(
-                    response, scores=scores, tokenizer=tokenizer, generated_tokens=generated_tokens
-                )
-            elif hasattr(probability_data, '__iter__') and not isinstance(probability_data, torch.Tensor):
-                # It's logprobs (OpenAI format)
-                verdict, probability = extract_verdict_and_probability(response, logprobs=probability_data)
-            elif isinstance(probability_data, torch.Tensor):
-                # It's scores (Hugging Face format - old format)
-                verdict, probability = extract_verdict_and_probability(response, scores=probability_data)
-            else:
-                # Unknown format, try without probability data
-                verdict, probability = extract_verdict_and_probability(response)
-        else:
-            verdict, probability = extract_verdict_and_probability(response)
     else:
         response = result
-        verdict, probability = extract_verdict_and_probability(response)
-    
-    return {
+        probability_data = None
+
+    generation_info: Optional[Dict[str, object]] = None
+    logprob_data = None
+    score_tensor_data = None
+
+    if probability_data is not None:
+        if isinstance(probability_data, dict):
+            generation_info = probability_data
+        elif isinstance(probability_data, tuple) and len(probability_data) == 3:
+            scores, tokenizer, generated_tokens = probability_data
+            generation_info = {
+                "scores": list(scores) if isinstance(scores, (list, tuple)) else scores,
+                "tokenizer": tokenizer,
+                "generated_tokens": generated_tokens,
+            }
+        elif hasattr(probability_data, "__iter__") and not isinstance(probability_data, torch.Tensor):
+            logprob_data = probability_data
+        elif isinstance(probability_data, torch.Tensor):
+            score_tensor_data = probability_data
+
+    reason_section = _extract_reason_section(response)
+    reason_context = reason_section.rstrip("\n ")
+    assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
+
+    probability_info = _compute_verdict_probability_info(
+        user_prompt=prompt,
+        assistant_context=assistant_context,
+        generation_info=generation_info,
+        response_text=response,
+    )
+
+    verdict = _extract_verdict_label(response)
+    if verdict == "UNKNOWN":
+        fallback_verdict, _ = extract_verdict_and_probability(
+            response,
+            logprobs=logprob_data,
+            scores=score_tensor_data,
+        )
+        if fallback_verdict != "UNKNOWN":
+            verdict = fallback_verdict
+        elif probability_info.get("predicted_verdict"):
+            verdict = probability_info["predicted_verdict"]
+
+    mapped_verdict = MCQ_VERDICT_MAP.get(verdict, verdict)
+    probability = probability_info.get("verdict_probabilities", {}).get(mapped_verdict)
+    if probability is None and probability_info.get("predicted_verdict"):
+        probability = probability_info["verdict_probabilities"].get(
+            probability_info["predicted_verdict"]
+        )
+
+    base_result = {
+        "verdict_text": response,
         "response": response,
         "verdict": verdict,
-        "probability": probability
+        "probability": probability,
+        "probability_info": probability_info,
+        "reason_section": reason_section.strip(),
+        "generation_info": None,
     }
+
+    return base_result
 
 
 def judge_final_verdict_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close):
     base_result = judge_final_verdict(
         claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close
     )
-    reason_section = _extract_reason_section(base_result["response"])
-    reason_context = reason_section.rstrip("\n ")
+    reason_section = base_result.get("reason_section") or _extract_reason_section(base_result.get("verdict_text", ""))
+    reason_context = reason_section.rstrip("\n ") if reason_section else ""
     assistant_context = f"{reason_context}\n[VERDICT]: " if reason_context else "[VERDICT]: "
     user_prompt = judge_prompt(
         claim, evidence,
@@ -646,16 +824,30 @@ def judge_final_verdict_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_
         pol_rebut, sci_rebut,
         pol_close, sci_close
     )
-    probability_info = _compute_verdict_probability_info(user_prompt, assistant_context)
+
+    probability_info = base_result.get("probability_info") or {}
+    generation_info = base_result.get("generation_info")
+    if not probability_info.get("choice_logprobs"):
+        probability_info = _compute_verdict_probability_info(
+            user_prompt,
+            assistant_context,
+            generation_info=generation_info,
+            response_text=base_result.get("verdict_text"),
+        )
+
+    choice_logprobs = probability_info.get("choice_logprobs") if probability_info else None
+    choice_probabilities = probability_info.get("choice_probabilities") if probability_info else None
+    if choice_probabilities is None and choice_logprobs:
+        choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
 
     augmented_result = dict(base_result)
     augmented_result.update({
-        "reason_section": reason_section.strip(),
-        "probabilistic_verdict": probability_info["predicted_verdict"],
-        "verdict_probabilities": probability_info["verdict_probabilities"],
-        "verdict_logprobs": probability_info["verdict_logprobs"],
-        "choice_logprobs": probability_info["choice_logprobs"],
-        "choice_probabilities": _logprobs_to_probabilities(probability_info["choice_logprobs"]),
+        "reason_section": (reason_section or "").strip(),
+        "probabilistic_verdict": probability_info.get("predicted_verdict"),
+        "verdict_probabilities": probability_info.get("verdict_probabilities"),
+        "verdict_logprobs": probability_info.get("verdict_logprobs"),
+        "choice_logprobs": choice_logprobs,
+        "choice_probabilities": choice_probabilities,
     })
 
     return augmented_result

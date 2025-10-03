@@ -1,19 +1,21 @@
 #!/bin/bash
-# Run multi_people mode with Qwen model on feverous_golden_evidence_new2.json
+#SBATCH --job-name=feverous_table_qwen
+#SBATCH --output=logs/feverous_table_qwen_%j.out
+#SBATCH --error=logs/feverous_table_qwen_%j.err
+#SBATCH --time=50:00:00
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:h100-47:1
+#SBATCH --cpus-per-task=6
+#SBATCH --mem=64G
+#SBATCH --ntasks=1
+#SBATCH --hint=nomultithread
 
-echo "=========================================="
-echo "Running multi_people with Qwen"
-echo "Dataset: feverous_golden_evidence_new2.json"
-echo "=========================================="
-echo ""
+# 初始化环境
+source ~/.bashrc
+conda activate mad_debate
 
-python main.py \
-    --mode multi_people \
-    --model qwen \
-    --input_file /home/qqs/mad_formal_0916/data/feverous_golden_evidence_new2.json
+# 创建日志目录
+mkdir -p logs
 
-echo ""
-echo "=========================================="
-echo "✅ Completed!"
-echo "=========================================="
-
+# 执行命令
+python -u main.py --mode multi_people --model qwen --input_file data/feverous_golden_evidence_new2.json

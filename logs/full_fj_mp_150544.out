@@ -1,0 +1,763 @@
+Loading llama model...
+Model loaded successfully: llama
+Loading input file: data/matching_evidence_full.json
+Output will be saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processing 150 examples in multi_people_fj mode with llama model
+No existing results file found, starting from scratch...
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 12994 processed in 33.23 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 1 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13003 processed in 30.70 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 2 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13006 processed in 32.25 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 3 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13019 processed in 2.42 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 4 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13020 processed in 32.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 5 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13035 processed in 32.13 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 6 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13036 processed in 32.22 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 7 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13037 processed in 32.32 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 8 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13041 processed in 33.57 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 9 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13058 processed in 32.07 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 10 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13063 processed in 3.55 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 11 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13068 processed in 31.93 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 12 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13070 processed in 33.23 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 13 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13072 processed in 3.13 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 14 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13091 processed in 31.61 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 15 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13096 processed in 33.22 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 16 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13105 processed in 32.87 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 17 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13109 processed in 33.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 18 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13115 processed in 3.01 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 19 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13122 processed in 32.54 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 20 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13124 processed in 32.66 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 21 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13127 processed in 2.76 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 22 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13134 processed in 31.77 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 23 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13135 processed in 32.64 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 24 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13144 processed in 31.36 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 25 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13152 processed in 32.82 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 26 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13156 processed in 34.88 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 27 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13158 processed in 31.05 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 28 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13162 processed in 33.54 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 29 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13171 processed in 31.82 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 30 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13172 processed in 32.17 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 31 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13178 processed in 3.41 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 32 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13190 processed in 33.29 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 33 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13199 processed in 32.27 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 34 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13204 processed in 12.26 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 35 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13208 processed in 33.40 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 36 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13210 processed in 23.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 37 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13213 processed in 33.36 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 38 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13227 processed in 13.92 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 39 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13229 processed in 33.51 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 40 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13231 processed in 33.67 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 41 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13233 processed in 32.30 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 42 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13235 processed in 24.49 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 43 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13245 processed in 2.99 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 44 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13246 processed in 32.83 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 45 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13248 processed in 33.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 46 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13257 processed in 32.43 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 47 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13263 processed in 13.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 48 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13267 processed in 32.02 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 49 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13270 processed in 32.40 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 50 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13028 processed in 1.77 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 51 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13066 processed in 31.98 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 52 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13074 processed in 2.86 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 53 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13132 processed in 3.68 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 54 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13209 processed in 32.02 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 55 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13226 processed in 2.95 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 56 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13237 processed in 32.13 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 57 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13273 processed in 32.21 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 58 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13277 processed in 33.68 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 59 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13319 processed in 31.95 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 60 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13326 processed in 33.81 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 61 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13361 processed in 2.90 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 62 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13372 processed in 13.39 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 63 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13375 processed in 3.40 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 64 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13395 processed in 31.91 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 65 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13409 processed in 32.03 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 66 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13460 processed in 33.41 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 67 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13475 processed in 32.90 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 68 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13546 processed in 31.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 69 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13553 processed in 33.21 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 70 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13556 processed in 33.16 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 71 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13567 processed in 33.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 72 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13581 processed in 2.96 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 73 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13607 processed in 3.28 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 74 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13621 processed in 2.63 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 75 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13639 processed in 23.42 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 76 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13663 processed in 2.71 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 77 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13756 processed in 2.03 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 78 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13764 processed in 32.52 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 79 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13766 processed in 3.07 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 80 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13789 processed in 32.45 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 81 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13808 processed in 2.42 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 82 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13832 processed in 31.55 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 83 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13919 processed in 32.44 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 84 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13943 processed in 3.34 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 85 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13949 processed in 32.48 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 86 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13958 processed in 32.94 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 87 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13959 processed in 34.33 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 88 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13986 processed in 2.79 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 89 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14009 processed in 32.25 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 90 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14014 processed in 31.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 91 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14050 processed in 33.87 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 92 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14120 processed in 3.10 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 93 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14139 processed in 31.69 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 94 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14193 processed in 2.32 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 95 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14248 processed in 3.03 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 96 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14256 processed in 32.08 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 97 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14281 processed in 2.48 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 98 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14283 processed in 31.73 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 99 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 14293 processed in 32.85 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 100 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 12995 processed in 2.48 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 101 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 12996 processed in 2.79 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 102 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 12997 processed in 32.11 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 103 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 12998 processed in 2.92 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 104 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 12999 processed in 2.60 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 105 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13000 processed in 13.46 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 106 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13001 processed in 13.66 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 107 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13002 processed in 2.47 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 108 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13004 processed in 12.91 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 109 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13005 processed in 2.56 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 110 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13007 processed in 3.88 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 111 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13008 processed in 2.71 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 112 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13009 processed in 13.83 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 113 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13010 processed in 2.54 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 114 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13011 processed in 2.37 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 115 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13012 processed in 2.18 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 116 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13013 processed in 28.72 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 117 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13014 processed in 32.68 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 118 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13015 processed in 3.59 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 119 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13016 processed in 3.22 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 120 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13017 processed in 3.29 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 121 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13018 processed in 32.02 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 122 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13021 processed in 12.72 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 123 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13022 processed in 31.47 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 124 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13023 processed in 3.29 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 125 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13024 processed in 32.92 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 126 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13025 processed in 32.80 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 127 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13026 processed in 32.74 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 128 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13027 processed in 3.18 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 129 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13029 processed in 3.40 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 130 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13030 processed in 29.79 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 131 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13031 processed in 32.51 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 132 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13032 processed in 13.19 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 133 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13033 processed in 2.31 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 134 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13034 processed in 23.09 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 135 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13038 processed in 2.92 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 136 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13039 processed in 13.52 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 137 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13040 processed in 2.51 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 138 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13042 processed in 13.36 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 139 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13043 processed in 2.40 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 140 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13044 processed in 14.23 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 141 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13045 processed in 32.63 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 142 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13046 processed in 3.29 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 143 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13047 processed in 3.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 144 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13048 processed in 32.97 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 145 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13049 processed in 4.01 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 146 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13050 processed in 2.82 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 147 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13051 processed in 22.93 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 148 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13052 processed in 3.52 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 149 examples
+
+=== Running Multi-Agent People Debate (Front-Round Judge) ===
+Claim 13053 processed in 13.35 seconds
+Results saved to: data/matching_evidence_full_answer_map_multi_people_fj_llama.json
+Processed 150 examples
+
+=== 时间统计 ===
+总处理时间: 3024.78 秒 (50.41 分钟)
+实际处理时间: 3024.78 秒 (50.41 分钟)
+处理的claim数量: 150
+平均每个claim处理时间: 20.17 秒
+预计剩余时间: 0.00 秒

@@ -1,0 +1,32 @@
+Loading llama model...
+Model loaded successfully: llama
+Loading input file: data/matching_evidence_full.json
+Output will be saved to: data/matching_evidence_full_answer_map_multi_people_round_mcq_llama.json
+Processing 150 examples in multi_people_round_mcq mode with llama model
+No existing results file found, starting from scratch...
+
+=== Running Multi-Agent People Debate with Round Judges (MCQ) ===
+
+=== Running Multi-Agent People Debate with Round Judges (probability view) ===
+Round 1: Opening statements...
+Round 1 Judge evaluation (probabilities)...
+Generated response length: 709
+Scores available: True
+Scores type: <class 'tuple'>, length: 143
+Generated tokens: [793, 36404, 25, 578, 3802, 330, 59828, 7729, 1051, 25404, 5190, 304, 220, 1049, 23, 11, 1234, 50360, 17594, 1111, 4872, 10058, 468, 13, 14409, 1, 374, 26310, 7396, 555, 6029, 11, 11951, 279, 13443, 505, 279, 549, 815, 13, 12634, 8245, 17128, 9204, 430, 6962, 7729, 8813, 264, 16557, 304, 5887, 220, 1049, 23, 13, 4452, 11, 279, 3802, 17918, 6517, 9803, 279, 2317, 323, 49378, 279, 5199, 7100, 68260, 430, 10222, 2391, 279, 14409, 8735, 11, 2737, 279, 220, 24, 14, 806, 8951, 323, 279, 220, 1049, 23, 21515, 11501, 11, 902, 1047, 264, 28254, 5536, 389, 279, 3728, 8752, 323, 6962, 7729, 13, 23212, 11, 279, 3802, 14865, 311, 25670, 279, 3560, 315, 3728, 8312, 323, 7631, 304, 26679, 6962, 7729, 11, 8104, 279, 10383, 315, 507, 11183, 596, 5788, 11429, 382, 3848, 35, 15149, 25, 96422, 12, 21260, 128009]
+Round 1 - Got probability data type: <class 'dict'>
+Round 2: Rebuttal statements...
+Round 2 Judge evaluation (probabilities)...
+Generated response length: 705
+Scores available: True
+Scores type: <class 'tuple'>, length: 141
+Generated tokens: [793, 36404, 25, 578, 3802, 330, 59828, 7729, 1051, 25404, 5190, 304, 220, 1049, 23, 11, 1234, 50360, 17594, 1111, 4872, 10058, 468, 13, 14409, 1, 374, 7396, 555, 43010, 6029, 505, 279, 549, 815, 13, 12634, 8245, 17128, 11, 902, 5039, 430, 279, 8592, 6962, 7729, 10222, 304, 5887, 220, 1049, 23, 11, 2391, 279, 14409, 8735, 13, 578, 6029, 1101, 22020, 279, 5199, 7100, 68260, 430, 10222, 2391, 279, 14409, 8735, 11, 2737, 279, 220, 24, 14, 806, 8951, 323, 279, 220, 1049, 23, 21515, 11501, 323, 9935, 6825, 18678, 11, 902, 1047, 264, 28254, 5536, 389, 279, 3728, 8752, 323, 6962, 7729, 13, 23212, 11, 279, 21021, 315, 279, 73026, 22981, 287, 54837, 320, 46, 11183, 8, 11335, 264, 5199, 3560, 304, 26991, 3728, 5707, 8312, 11, 902, 22223, 6962, 7729, 382, 3848, 35, 15149, 25, 8378, 128009]
+Round 2 - Got probability data type: <class 'dict'>
+Round 3: Closing statements...
+Final Judge evaluation (probabilities)...
+Generated response length: 607
+Scores available: True
+Scores type: <class 'tuple'>, length: 129
+Generated tokens: [793, 36404, 25, 578, 3802, 330, 59828, 7729, 1051, 25404, 5190, 304, 220, 1049, 23, 11, 1234, 50360, 17594, 1111, 4872, 10058, 468, 13, 14409, 1, 374, 26310, 13687, 11, 439, 6962, 7729, 1550, 5662, 264, 16557, 304, 5887, 220, 1049, 23, 11, 719, 433, 37856, 2317, 323, 17918, 6517, 9803, 279, 5133, 1990, 13621, 78173, 323, 6962, 7729, 13, 578, 6029, 505, 279, 549, 815, 13, 12634, 8245, 17128, 320, 36, 5987, 8, 5039, 430, 6962, 7729, 39388, 13148, 12207, 927, 279, 3347, 220, 508, 1667, 11, 449, 912, 2867, 26670, 311, 279, 4872, 477, 4717, 304, 2410, 13, 578, 3430, 315, 46595, 374, 15871, 11075, 555, 279, 1614, 315, 279, 8752, 323, 279, 8335, 315, 8312, 323, 7631, 382, 3848, 35, 15149, 25, 96422, 12, 21260, 128009]
+Final - Got probability data type: <class 'dict'>
+Claim 12994 processed in 35.42 seconds
