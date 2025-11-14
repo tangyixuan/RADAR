@@ -106,7 +106,7 @@ def run_multi_agent_people_bj(claim, evidence, model_info):
 
 
 def run_multi_agent_people_fj(claim, evidence, model_info):
-    from agents.multi_agent_people_fj_test import set_model_info, run_multi_agent_people_fj as run_people_fj
+    from agents.multi_agent_people_fj import set_model_info, run_multi_agent_people_fj as run_people_fj
     set_model_info(model_info)
 
     print("\n=== Running Multi-Agent People Debate (Front-Round Judge) ===")
@@ -509,6 +509,20 @@ def run_multi_agent_people_round_mcq(claim, evidence, model_info):
     print("\n=== Running Multi-Agent People Debate with Round Judges (MCQ) ===")
     return run_people_round_mcq(claim, evidence)
 
+def run_multi_agent_people_hybrid_mcq(claim, evidence, model_info):
+    from agents.multi_agent_people_hybrid import set_model_info, run_multi_agent_people_hybrid_mcq as run_people_hybrid_mcq
+    set_model_info(model_info)
+
+    print("\n=== Running Multi-Agent People Hybrid Debate with MCQ Probabilities ===")
+    return run_people_hybrid_mcq(claim, evidence)
+
+def run_multi_agent_people_hybrid_adaptive(claim, evidence, model_info, tau_s, tau_v):
+    from agents.multi_agent_people_hybrid import set_model_info, run_multi_agent_people_hybrid_adaptive as run_people_hybrid_adaptive
+    set_model_info(model_info)
+
+    print(f"\n=== Running Multi-Agent People Hybrid Debate with Adaptive Early Stopping (tau_s={tau_s}, tau_v={tau_v}) ===")
+    return run_people_hybrid_adaptive(claim, evidence, tau_s, tau_v)
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -535,7 +549,10 @@ def main():
             "multi_people_2r",
             "multi_people_4r",
             "multi_people_round",
-            "multi_people_round_mcq"
+            "multi_people_round_mcq",
+            "multi_people_hybrid",
+            "multi_people_hybrid_mcq",
+            "multi_people_hybrid_adaptive"
         ],
         default="single",
         help="Choose inference mode."
@@ -568,6 +585,18 @@ def main():
         required=True,
         help="Path to the input JSON file containing examples."
     )
+    parser.add_argument(
+        "--tau_s",
+        type=float,
+        default=0.5,
+        help="Stop margin threshold for adaptive early stopping (default: 0.5)"
+    )
+    parser.add_argument(
+        "--tau_v",
+        type=float,
+        default=0.7,
+        help="Veracity confidence threshold for adaptive early stopping (default: 0.7)"
+    )
     args = parser.parse_args()
 
     print(f"Loading {args.model} model...")
@@ -594,7 +623,7 @@ def main():
 
     # Generate output filename based on input filename and model
     input_basename = os.path.splitext(os.path.basename(args.input_file))[0]
-    output_file = os.path.join("data", f"{input_basename}_answer_map_{args.mode}_{args.model}.json")
+    output_file = os.path.join("data1", f"{input_basename}_answer_map_{args.mode}_{args.model}.json")
     
     print(f"Output will be saved to: {output_file}")
     print(f"Processing {len(all_examples)} examples in {args.mode} mode with {args.model} model")
@@ -769,6 +798,18 @@ def main():
 
         elif args.mode == "multi_people_round_mcq":
             result = run_multi_agent_people_round_mcq(claim, evidence, model_info)
+            answer_map[example_id] = result
+
+        elif args.mode == "multi_people_hybrid":
+            result = run_multi_agent_people_hybrid(claim, evidence, model_info)
+            answer_map[example_id] = result
+
+        elif args.mode == "multi_people_hybrid_mcq":
+            result = run_multi_agent_people_hybrid_mcq(claim, evidence, model_info)
+            answer_map[example_id] = result
+
+        elif args.mode == "multi_people_hybrid_adaptive":
+            result = run_multi_agent_people_hybrid_adaptive(claim, evidence, model_info, args.tau_s, args.tau_v)
             answer_map[example_id] = result
 
         elif args.mode == "multi_stance_3":

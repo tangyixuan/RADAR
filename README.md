@@ -129,6 +129,7 @@ python main.py --mode single --input_file /path/to/your/data.json
 - `pcj_3`: Pro-Con-Journalist debate with intent inference and claim reformulation
 - `four_agents`: Four-agent debate mode (2 pro vs 2 con agents)
 - `four_agents_people`: Four-agent debate mode with politician, scientist, journalist, and domain specialist
+- `hybrid_mcq_adaptive`: Adaptive early stopping debate mode with confidence-based termination
 
 **Search Method Integration:**
 
@@ -141,6 +142,9 @@ python main.py --mode single --input_file data/retrieved_evidence_bgebase.json
 
 # Multi-agent debate mode with basic search results  
 python main.py --mode multi --input_file data/retrieved_evidence_bgebase.json
+
+# Hybrid MCQ adaptive mode with basic search results
+python main.py --mode hybrid_mcq_adaptive --input_file data/retrieved_evidence_bgebase.json
 ```
 
 **For Intent-Enhanced Search Results:**
@@ -150,6 +154,9 @@ python main.py --mode single --input_file data/retrieved_evidence_bgebase_intent
 
 # Multi-agent debate mode with intent-enhanced search results
 python main.py --mode multi --input_file data/retrieved_evidence_bgebase_intent_enhanced.json
+
+# Hybrid MCQ adaptive mode with intent-enhanced search results
+python main.py --mode hybrid_mcq_adaptive --input_file data/retrieved_evidence_bgebase_intent_enhanced.json
 ```
 
 **For Groundtruth Evidence Results:**
@@ -180,6 +187,9 @@ python main.py --mode four_agents --input_file data/full_evidence.json
 
 # Four agents people mode with groundtruth evidence
 python main.py --mode four_agents_people --input_file data/full_evidence.json
+
+# Hybrid MCQ adaptive mode with groundtruth evidence
+python main.py --mode hybrid_mcq_adaptive --input_file data/full_evidence.json
 ```
 
 ## Mode Descriptions
@@ -249,6 +259,26 @@ python main.py --mode four_agents_people --input_file data/full_evidence.json
 - **Dynamic Domain Assignment**: System automatically determines the most appropriate domain specialist for each claim
 - **Debate Structure**: Opening statements → Rebuttals → Closing statements → Final verdict
 - Output: Domain specialist assignment, complete debate transcript, and final verdict
+
+### Hybrid MCQ Adaptive Mode (`hybrid_mcq_adaptive`)
+- Advanced adaptive early stopping debate system with confidence-based termination
+- **Adaptive Early Stopping**: Automatically determines whether to continue or stop the debate based on confidence thresholds
+- **Confidence Thresholds**: Uses `tau_s` (stop margin threshold) and `tau_v` (verdict confidence threshold) parameters
+  - `tau_s`: Stop margin threshold (default: -0.6) - controls when to stop based on choice probability difference
+  - `tau_v`: Verdict confidence threshold (default: 0.75) - controls when to stop based on verdict certainty
+- **Dynamic Round Execution**: Can terminate early after opening or rebuttal rounds if confidence is high enough
+- **Multi-Agent Structure**: Supports politician vs scientist debate format with adaptive termination
+- **Continuation Decision Logic**: Makes intelligent decisions about whether to continue based on:
+  - Current debate quality and completeness
+  - Confidence levels in the current verdict
+  - Potential for additional rounds to change the outcome
+- **Enhanced Output Format**: Includes detailed termination information:
+  - `executed_rounds`: List of completed debate rounds
+  - `continuation_decisions`: Detailed decision log with rationale and probabilities
+  - `round_judges`: Per-round verdict assessments with confidence scores
+  - `early_termination_count`: Number of early stops triggered
+- **Efficiency Benefits**: Reduces computational cost while maintaining accuracy by stopping when sufficient evidence is gathered
+- Output: Complete adaptive debate process with termination analytics and final verdict
 
 ## Output Results
 
@@ -427,6 +457,132 @@ After the program completes, it will generate:
     "journalist_closing": "...",
     "domain_scientist_closing": "...",
     "final_verdict": "[VERDICT]: TRUE"
+  }
+}
+```
+
+**Hybrid MCQ Adaptive Mode:**
+```json
+{
+  "example_id": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "...",
+        "scientist": "..."
+      },
+      "rebuttal": {
+        "politician": "...",
+        "scientist": "..."
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening",
+      "rebuttal"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "continue",
+        "rationale": "DECISION: CONTINUE\nREASON: While the evidence presented so far provides some insight...",
+        "choice_logprobs": {
+          "STOP": -2.1562016010284424,
+          "CONTINUE": -0.12495169043540955
+        },
+        "choice_probabilities": {
+          "STOP": 0.11596072741941771,
+          "CONTINUE": 0.8840392725805823
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": -0.7680785451611647,
+        "confidence": 0.7762200126196759,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "closing",
+        "decision": "stop",
+        "rationale": "DECISION: CONTINUE\nREASON: While the evidence presented so far provides some insight... [EARLY STOP TRIGGERED: s=-0.5156 >= -0.6, c=0.9200 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -1.4202128648757935,
+          "CONTINUE": -0.27958786487579346
+        },
+        "choice_probabilities": {
+          "STOP": 0.24220562872535945,
+          "CONTINUE": 0.7577943712746406
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": -0.5155887425492811,
+        "confidence": 0.920015535670166,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": true
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "TRUE",
+        "response": "REASON: The claim is supported by credible evidence...",
+        "probability": 0.7762200126196759,
+        "verdict_probabilities": {
+          "TRUE": 0.7762200126196759,
+          "FALSE": 0.004837079457007633,
+          "HALF-TRUE": 0.21894290792331647
+        }
+      },
+      "round_2": {
+        "verdict": "TRUE",
+        "response": "REASON: The evidence provided shows...",
+        "probability": 0.920015535670166,
+        "verdict_probabilities": {
+          "TRUE": 0.920015535670166,
+          "FALSE": 0.004464983035751509,
+          "HALF-TRUE": 0.0755194812940825
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "TRUE",
+      "response": "REASON: The evidence provided, including statistics from the U.S. Energy Information Administration...",
+      "probability": 0.919928501746603,
+      "verdict_probabilities": {
+        "TRUE": 0.919928501746603,
+        "FALSE": 0.003370027432284919,
+        "HALF-TRUE": 0.07670147082111202
+      }
+    },
+    "early_termination_count": 1
   }
 }
 ```
