@@ -129,7 +129,8 @@ python main.py --mode single --input_file /path/to/your/data.json
 - `pcj_3`: Pro-Con-Journalist debate with intent inference and claim reformulation
 - `four_agents`: Four-agent debate mode (2 pro vs 2 con agents)
 - `four_agents_people`: Four-agent debate mode with politician, scientist, journalist, and domain specialist
-- `hybrid_mcq_adaptive`: Adaptive early stopping debate mode with confidence-based termination
+- `multi_people_hybrid_mcq`: Multi-agent hybrid debate with MCQ probability analysis and adaptive early stopping
+- `multi_people_hybrid_adaptive`: Alias for `multi_people_hybrid_mcq` with explicit adaptive early stopping parameters
 
 **Search Method Integration:**
 
@@ -143,8 +144,8 @@ python main.py --mode single --input_file data/retrieved_evidence_bgebase.json
 # Multi-agent debate mode with basic search results  
 python main.py --mode multi --input_file data/retrieved_evidence_bgebase.json
 
-# Hybrid MCQ adaptive mode with basic search results
-python main.py --mode hybrid_mcq_adaptive --input_file data/retrieved_evidence_bgebase.json
+# Multi-agent people hybrid MCQ mode with basic search results
+python main.py --mode multi_people_hybrid_mcq --input_file data/retrieved_evidence_bgebase.json
 ```
 
 **For Intent-Enhanced Search Results:**
@@ -155,8 +156,8 @@ python main.py --mode single --input_file data/retrieved_evidence_bgebase_intent
 # Multi-agent debate mode with intent-enhanced search results
 python main.py --mode multi --input_file data/retrieved_evidence_bgebase_intent_enhanced.json
 
-# Hybrid MCQ adaptive mode with intent-enhanced search results
-python main.py --mode hybrid_mcq_adaptive --input_file data/retrieved_evidence_bgebase_intent_enhanced.json
+# Multi-agent people hybrid MCQ mode with intent-enhanced search results
+python main.py --mode multi_people_hybrid_mcq --input_file data/retrieved_evidence_bgebase_intent_enhanced.json
 ```
 
 **For Groundtruth Evidence Results:**
@@ -188,8 +189,11 @@ python main.py --mode four_agents --input_file data/full_evidence.json
 # Four agents people mode with groundtruth evidence
 python main.py --mode four_agents_people --input_file data/full_evidence.json
 
-# Hybrid MCQ adaptive mode with groundtruth evidence
-python main.py --mode hybrid_mcq_adaptive --input_file data/full_evidence.json
+# Multi-agent people hybrid MCQ mode with groundtruth evidence
+python main.py --mode multi_people_hybrid_mcq --input_file data/full_evidence.json
+
+# Multi-agent people hybrid adaptive mode with custom thresholds
+python main.py --mode multi_people_hybrid_adaptive --input_file data/full_evidence.json --tau_s -0.5 --tau_v 0.8
 ```
 
 ## Mode Descriptions
@@ -260,14 +264,17 @@ python main.py --mode hybrid_mcq_adaptive --input_file data/full_evidence.json
 - **Debate Structure**: Opening statements → Rebuttals → Closing statements → Final verdict
 - Output: Domain specialist assignment, complete debate transcript, and final verdict
 
-### Hybrid MCQ Adaptive Mode (`hybrid_mcq_adaptive`)
-- Advanced adaptive early stopping debate system with confidence-based termination
+### Multi-Agent People Hybrid MCQ Mode (`multi_people_hybrid_mcq`)
+- Advanced adaptive early stopping debate system with confidence-based termination and MCQ probability analysis
 - **Adaptive Early Stopping**: Automatically determines whether to continue or stop the debate based on confidence thresholds
+- **MCQ Probability Analysis**: Uses multiple-choice question format for verdict confidence assessment
 - **Confidence Thresholds**: Uses `tau_s` (stop margin threshold) and `tau_v` (verdict confidence threshold) parameters
   - `tau_s`: Stop margin threshold (default: -0.6) - controls when to stop based on choice probability difference
   - `tau_v`: Verdict confidence threshold (default: 0.75) - controls when to stop based on verdict certainty
 - **Dynamic Round Execution**: Can terminate early after opening or rebuttal rounds if confidence is high enough
 - **Multi-Agent Structure**: Supports politician vs scientist debate format with adaptive termination
+- **Forward Judging**: Decides before each round whether to continue based on current evidence quality
+- **Round Judging**: Evaluates after each completed round with detailed probability distributions
 - **Continuation Decision Logic**: Makes intelligent decisions about whether to continue based on:
   - Current debate quality and completeness
   - Confidence levels in the current verdict
@@ -279,6 +286,13 @@ python main.py --mode hybrid_mcq_adaptive --input_file data/full_evidence.json
   - `early_termination_count`: Number of early stops triggered
 - **Efficiency Benefits**: Reduces computational cost while maintaining accuracy by stopping when sufficient evidence is gathered
 - Output: Complete adaptive debate process with termination analytics and final verdict
+
+### Multi-Agent People Hybrid Adaptive Mode (`multi_people_hybrid_adaptive`)
+- Convenience alias for `multi_people_hybrid_mcq` mode with explicit adaptive early stopping parameters
+- **Same Functionality**: Provides identical functionality to `multi_people_hybrid_mcq`
+- **Parameter Flexibility**: Allows explicit specification of `tau_s` and `tau_v` thresholds via command line arguments
+- **Usage Preference**: Use this mode when you want to experiment with different threshold values
+- Output: Identical to `multi_people_hybrid_mcq` mode
 
 ## Output Results
 
@@ -461,7 +475,7 @@ After the program completes, it will generate:
 }
 ```
 
-**Hybrid MCQ Adaptive Mode:**
+**Multi-Agent People Hybrid MCQ Mode:**
 ```json
 {
   "example_id": {

@@ -1,0 +1,294 @@
+{
+  "12994": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "I stand in opposition to the claim that gas prices were WAY higher in 2008 under Republican President George W. Bush. While it is true that gas prices were higher in 2008, it's essential to consider the context and the factors that contributed to those prices.\n\nFirstly, as the evidence suggests, gas prices were indeed higher in 2008, but they were also affected by two major economic shocks: the 9/11 attacks and the 2008 mortgage crisis. These events had a significant impact on the global economy, leading to a sharp increase in gas prices. However, as the evidence also shows, gas prices began to decline by the end of Bush's term, reaching around $1.83 by the time President Obama took office.\n\nFurthermore, it's crucial to consider the current context. Gas prices are indeed higher under President Biden, but they are also affected by a range of factors, including global events such as the invasion of Ukraine and the subsequent sanctions on Russia. These factors have contributed to a significant increase in gas prices, which is not solely the result of President Biden's policies.\n\nIn fact, as the evidence from the U.S. Energy Information Administration shows, gas prices have fluctuated over the past 20 years, and it's not accurate to attribute the current prices solely to President Biden's administration. Additionally, it's important to note that gas prices are currently around $3.32 a gallon, which is still lower than the peak of about $4",
+        "scientist": "As a scientist, I must evaluate the claim \"Gas prices were WAY higher in 2008, under REPUBLICAN president George W. Bush\" based on empirical evidence and data. After reviewing the provided evidence, I oppose this claim.\n\nFirstly, the claim relies on a comparison between the highest gas prices in 2008 and the current prices under President Biden. However, this comparison is incomplete and misleading. The evidence provided shows that gas prices were indeed higher in 2008, but it also highlights that there were significant economic shocks during Bush's term, such as the 9/11 attacks and the 2008 mortgage crisis, which led to a decline in gas prices by the end of his term.\n\nSecondly, the claim ignores the fact that gas prices have fluctuated over time due to various factors, including global events, economic conditions, and supply and demand. The graph provided shows that gas prices have risen and fallen over the past 20 years, and it is not accurate to attribute the current prices solely to President Biden's administration.\n\nThirdly, the claim relies on a comparison between the national average gas price in 2008 ($4.11) and the current price ($3.32). However, this comparison does not account for inflation, which would significantly impact the purchasing power of the dollar. When adjusted for inflation, the 2008 gas price would be equivalent to around $5.30 in today's dollars.\n\nIn conclusion, while it is true that gas"
+      },
+      "rebuttal": {
+        "politician": "Thank you, moderator. I'd like to address the opponent's points and reiterate the importance of considering the broader context and public interest in this debate.\n\nFirstly, I agree that the comparison between the highest gas prices in 2008 and current prices is incomplete without considering the economic shocks that occurred during Bush's term. However, I would argue that the claim is not solely focused on the highest prices, but rather on the overall trend and average prices during his administration. The statistics from the U.S. Energy Information Administration show that the average gas price during Bush's term was higher than during President Biden's term.\n\nSecondly, I acknowledge that gas prices have fluctuated over time due to various factors. However, I would argue that the current rise in gas prices is a significant concern for many Americans, particularly those who are struggling to make ends meet. As a politician, it is my duty to address the concerns of my constituents and provide solutions to alleviate the burden of high gas prices.\n\nThirdly, I understand the importance of adjusting for inflation when comparing prices. However, I would argue that the opponent's point is misleading. While the 2008 gas price may be equivalent to around $5.30 in today's dollars, the purchasing power of the dollar has also increased over time. In other words, the value of $5.30 in 2008 is not equivalent to the same value today.\n\nIn conclusion, I disagree with the opponent's assessment that the claim is misleading.",
+        "scientist": "I disagree with my opponent's argument that gas prices were not WAY higher in 2008 under Republican President George W. Bush. While it is true that gas prices were affected by external factors such as the 9/11 attacks and the 2008 mortgage crisis, the evidence suggests that gas prices were indeed higher during Bush's term.\n\nThe U.S. Energy Information Administration statistics show that the highest gas prices occurred in July 2008, during the Bush administration. The national average cost for a gallon of gas in the U.S. was $4.173 as of March 8, breaking the record set in 2008. This is a clear indication that gas prices were higher during Bush's term.\n\nMy opponent's argument that gas prices began to decline by the end of Bush's term is also misleading. While it is true that gas prices did decline, they were still higher than they were during the early years of Bush's term. In fact, gas prices were around $1.07 in 2001, and by the end of that year, they had increased to around $1.83.\n\nFurthermore, my opponent's argument that gas prices are higher under President Biden due to global events such as the invasion of Ukraine and the subsequent sanctions on Russia is a red herring. While these events have certainly contributed to the current high gas prices, they do not change the fact that gas prices were higher during Bush's term.\n\nIn conclusion, the evidence suggests that gas prices were indeed"
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening",
+      "rebuttal"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "continue",
+        "rationale": "DECISION: CONTINUE\nREASON: While the evidence presented so far provides some insight into the claim, I believe that the Rebuttal round may provide additional context and arguments that could potentially sway my decision.",
+        "choice_logprobs": {
+          "STOP": -2.1562016010284424,
+          "CONTINUE": -0.12495169043540955
+        },
+        "choice_probabilities": {
+          "STOP": 0.11596072741941771,
+          "CONTINUE": 0.8840392725805823
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": -0.7680785451611647,
+        "confidence": 0.7762200126196759,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "closing",
+        "decision": "stop",
+        "rationale": "DECISION: CONTINUE\nREASON: While the evidence presented so far provides some insight into the claim, I believe that the debate has not yet fully explored the nuances of the issue, particularly with regards to the impact of external factors on gas prices and the role of inflation in comparing prices across different time periods.\n[EARLY STOP TRIGGERED: s=-0.5156 >= -0.6, c=0.9200 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -1.4202128648757935,
+          "CONTINUE": -0.27958786487579346
+        },
+        "choice_probabilities": {
+          "STOP": 0.24220562872535945,
+          "CONTINUE": 0.7577943712746406
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": -0.5155887425492811,
+        "confidence": 0.920015535670166,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": true
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "TRUE",
+        "response": "REASON: The claim is supported by credible evidence from the U.S. Energy Information Administration, which shows that the highest gas prices occurred in July 2008 during the Bush administration. The evidence also highlights the impact of economic shocks, such as the 9/11 attacks and the 2008 mortgage crisis, on gas prices. Additionally, the claim is consistent with common sense and American values, as it acknowledges the fluctuation of gas prices over time and the impact of global events on the economy.\n\nVERDICT: TRUE",
+        "probability": 0.7762200126196759,
+        "verdict_probabilities": {
+          "TRUE": 0.7762200126196759,
+          "FALSE": 0.004837079457007633,
+          "HALF-TRUE": 0.21894290792331647
+        }
+      },
+      "round_2": {
+        "verdict": "TRUE",
+        "response": "REASON: The evidence provided, including statistics from the U.S. Energy Information Administration, shows that gas prices were indeed higher in 2008 under President George W. Bush. The national average cost for a gallon of gas in the U.S. was $4.173 as of March 8, breaking the record set in 2008. Additionally, the evidence highlights that gas prices were affected by external factors such as the 9/11 attacks and the 2008 mortgage crisis, which led to a decline in gas prices by the end of Bush's term. However, the evidence also shows that gas prices were still higher during Bush's term compared to the early years of his presidency.\n\nVERDICT: TRUE",
+        "probability": 0.920015535670166,
+        "verdict_probabilities": {
+          "TRUE": 0.920015535670166,
+          "FALSE": 0.004464983035751509,
+          "HALF-TRUE": 0.0755194812940825
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "TRUE",
+      "response": "REASON: The evidence provided, including statistics from the U.S. Energy Information Administration, shows that gas prices were indeed higher in 2008 under President George W. Bush. The national average cost for a gallon of gas in the U.S. was $4.173 as of March 8, breaking the record set in 2008. Additionally, the evidence highlights that gas prices were affected by external factors such as the 9/11 attacks and the 2008 mortgage crisis, which led to a decline in gas prices by the end of Bush's term. However, the evidence also shows that gas prices were still higher during Bush's term compared to the early years of his presidency.\n\nVERDICT: TRUE",
+      "probability": 0.919928501746603,
+      "verdict_probabilities": {
+        "TRUE": 0.919928501746603,
+        "FALSE": 0.003370027432284919,
+        "HALF-TRUE": 0.07670147082111202
+      }
+    },
+    "early_termination_count": 1
+  },
+  "12995": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "I strongly oppose the claim that if you don't comply with COVID-19 vaccination, you won't be able to receive your Social Security or disability benefits. This claim is baseless and misleading, and I'll explain why.\n\nFirstly, there is no evidence to support this claim. The Social Security Administration and the Centers for Disease Control and Prevention (CDC) have consistently stated that vaccination against COVID-19 is not a requirement for receiving Social Security benefits. In fact, the CDC has emphasized that vaccination is a personal choice and not a condition for receiving benefits.\n\nSecondly, the claim is a misinterpretation of a bill introduced by Senator Scott, which aims to prohibit requiring vaccination as a condition of receiving Social Security benefits. This bill is not about denying benefits to those who are not vaccinated, but rather about ensuring that individuals have the freedom to make their own choices about vaccination.\n\nThirdly, the claim is also a misrepresentation of the benefits of vaccination. Vaccination has been proven to be safe and effective in preventing severe illness, hospitalization, and death from COVID-19. In fact, data has consistently shown that unvaccinated individuals are at greater risk of contracting and dying from COVID-19 compared to those who are vaccinated.\n\nFinally, I want to emphasize that vaccination is a critical tool in our fight against COVID-19, and it is essential for protecting public health and preventing the spread of the virus. As a society, we must prioritize the well-being and safety of all individuals",
+        "scientist": "I oppose the claim that \"if you don't comply and get a COVID-19 vaccination, and you're on social security or disability, you won't be able to receive your money.\"\n\nThere is no scientific evidence to support this claim. In fact, the Centers for Disease Control and Prevention (CDC) and other reputable health organizations have consistently stated that COVID-19 vaccination is not a requirement for receiving Social Security benefits. The claim is likely a misinformation campaign aimed at spreading fear and confusion.\n\nFurthermore, the claim is based on a false premise. The COVID-19 vaccine does not cause harm to individuals, and it is not a condition for receiving Social Security benefits. The vaccine is a safe and effective way to prevent severe illness, hospitalization, and death from COVID-19.\n\nIn fact, data has consistently shown that unvaccinated individuals are at a higher risk of contracting COVID-19 and dying from it compared to vaccinated individuals. The vaccine has been extensively tested and proven to be safe and effective, with numerous studies and real-world data supporting its benefits.\n\nAdditionally, the claim is likely a misinterpretation of a bill introduced by Senator Scott, which aims to prohibit requiring COVID-19 vaccination as a condition of receiving Social Security benefits. This bill is not related to the claim being made, and it does not suggest that individuals will lose their benefits if they are not vaccinated.\n\nIn conclusion, I strongly oppose the claim that \"if you don't comply and get a COVID-19 vaccination,"
+      },
+      "rebuttal": {
+        "politician": "",
+        "scientist": ""
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "stop",
+        "rationale": "DECISION: STOP\nREASON: The claim is already thoroughly debunked by credible evidence from reputable sources, including the Social Security Administration and the Centers for Disease Control and Prevention (CDC). The claim is baseless, misleading, and lacks any scientific support, making it unnecessary to continue the debate.\n[EARLY STOP TRIGGERED: s=0.6795 >= -0.6, c=0.9990 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -0.17557068169116974,
+          "CONTINUE": -1.8318207263946533
+        },
+        "choice_probabilities": {
+          "STOP": 0.8397339736884711,
+          "CONTINUE": 0.1602660263115288
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": 0.6794679473769423,
+        "confidence": 0.9990473442783576,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": false
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "FALSE",
+        "response": "REASON: The claim is based on a false premise and lacks credible evidence to support it. The Social Security Administration and the Centers for Disease Control and Prevention (CDC) have consistently stated that vaccination against COVID-19 is not a requirement for receiving Social Security benefits. Additionally, the claim is a misinterpretation of a bill introduced by Senator Scott, which aims to prohibit requiring COVID-19 vaccination as a condition of receiving Social Security benefits.\n\nVERDICT: FALSE",
+        "probability": 0.9990473442783576,
+        "verdict_probabilities": {
+          "TRUE": 2.7296142000987704e-05,
+          "FALSE": 0.9990473442783576,
+          "HALF-TRUE": 0.0009253595796414816
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "FALSE",
+      "response": "REASON: The claim is based on a false premise and lacks credible evidence to support it. The Social Security Administration and the Centers for Disease Control and Prevention (CDC) have consistently stated that vaccination against COVID-19 is not a requirement for receiving Social Security benefits. Additionally, the claim is a misinterpretation of a bill introduced by Senator Scott, which aims to prohibit requiring COVID-19 vaccination as a condition of receiving Social Security benefits.\n\nVERDICT: FALSE",
+      "probability": 0.9993401046106217,
+      "verdict_probabilities": {
+        "TRUE": 4.32923297601479e-05,
+        "FALSE": 0.9993401046106217,
+        "HALF-TRUE": 0.0006166030596180802
+      }
+    },
+    "early_termination_count": 1
+  },
+  "12996": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "I oppose the claim that Desmond Tutu died on October 20, 2021. As a politician, I must rely on credible sources and evidence to inform my stance. In this case, the evidence presented clearly indicates that the claim is false.\n\nFirstly, the claim is based on a hoax Twitter account, which is a clear indication of misinformation. Secondly, the Desmond and Leah Tutu Legacy Foundation, which is a reputable organization, has categorically denied the claim, stating that Archbishop Emeritus Desmond Tutu is still alive.\n\nFurthermore, there is no credible evidence to support the claim. No official government or medical records have been released confirming Tutu's passing. In fact, the evidence suggests that Tutu is still alive, as he has been actively involved in various public events and initiatives since 2021.\n\nAs a politician, it is my duty to prioritize the truth and accuracy of information. I urge the public to be cautious of misinformation and to verify information through credible sources before accepting it as true. In this case, the evidence clearly indicates that Desmond Tutu did not die on October 20, 2021.",
+        "scientist": "I oppose the claim that Desmond Tutu died on October 20, 2021. The evidence presented clearly indicates that this claim is false. A hoax Twitter account falsely claimed Tutu's death, and the Desmond and Leah Tutu Legacy Foundation categorically denied the news, stating that Tutu is still alive.\n\nFurthermore, there is no credible evidence to support the claim of Tutu's death. The foundation's statement is a direct and authoritative denial of the claim, and it is reasonable to rely on their expertise and knowledge of Tutu's well-being.\n\nIn contrast, the claim is based on a fake Twitter account and lacks any credible evidence or corroboration. As a scientist, I must rely on empirical evidence and data, and this claim does not meet those standards.\n\nTherefore, based on the available evidence, I conclude that Desmond Tutu did not die on October 20, 2021."
+      },
+      "rebuttal": {
+        "politician": "",
+        "scientist": ""
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "stop",
+        "rationale": "DECISION: STOP\nREASON: The evidence presented so far is clear and conclusive, showing that the claim is based on a hoax Twitter account and denied by the Desmond and Leah Tutu Legacy Foundation. There is no credible evidence to support the claim, and both debaters have presented strong arguments against it, making it unnecessary to continue the debate.\n[EARLY STOP TRIGGERED: s=0.9318 >= -0.6, c=1.0000 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -0.03496687486767769,
+          "CONTINUE": -3.3787169456481934
+        },
+        "choice_probabilities": {
+          "STOP": 0.9658995766190278,
+          "CONTINUE": 0.034100423380972224
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": 0.9317991532380556,
+        "confidence": 0.9999869839287722,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": false
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "FALSE",
+        "response": "REASON: The evidence presented clearly indicates that the claim is false. A hoax Twitter account falsely claimed Tutu's death, and the Desmond and Leah Tutu Legacy Foundation categorically denied the news, stating that Tutu is still alive. There is no credible evidence to support the claim of Tutu's death, and the foundation's statement is a direct and authoritative denial of the claim.\n\nVERDICT: FALSE",
+        "probability": 0.9999869839287722,
+        "verdict_probabilities": {
+          "TRUE": 1.2123982336832349e-05,
+          "FALSE": 0.9999869839287722,
+          "HALF-TRUE": 8.920888910874412e-07
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "FALSE",
+      "response": "REASON: The evidence presented clearly indicates that the claim is false. A hoax Twitter account falsely claimed Tutu's death, and the Desmond and Leah Tutu Legacy Foundation categorically denied the news, stating that Tutu is still alive. There is no credible evidence to support the claim of Tutu's death, and the foundation's statement is a direct and authoritative denial of the claim.\n\nVERDICT: FALSE",
+      "probability": 0.9999732879902516,
+      "verdict_probabilities": {
+        "TRUE": 2.5867408928808324e-05,
+        "FALSE": 0.9999732879902516,
+        "HALF-TRUE": 8.446008195098621e-07
+      }
+    },
+    "early_termination_count": 1
+  }
+}

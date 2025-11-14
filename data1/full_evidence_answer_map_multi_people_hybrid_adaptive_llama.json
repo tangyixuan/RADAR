@@ -1,0 +1,294 @@
+{
+  "12994": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "I stand in opposition to the claim that gas prices were WAY higher in 2008 under Republican President George W. Bush. While it is true that gas prices did reach historic highs in July 2008, it is essential to consider the context and factors that contributed to these prices.\n\nFirstly, the claim ignores the significant economic shocks that occurred during the Bush administration, including the 9/11 attacks and the 2008 mortgage crisis and Wall Street collapse. These events had a profound impact on the global economy and led to a decrease in gas prices. In fact, by the end of Bush's second term, gas prices had dropped to around $1.83 per gallon.\n\nSecondly, the claim fails to acknowledge the role of global supply and demand in determining gas prices. The Organization of the Petroleum Exporting Countries (OPEC) plays a significant role in controlling the global supply of oil, and their decisions have a direct impact on prices. In 2001, OPEC set the average price of oil at around $23 a barrel, which incentivized increased consumption and led to rising demand. By the middle of 2008, oil prices spiked past $147 a barrel due to supply disruptions and tensions between the U.S. and Iran.\n\nThirdly, the claim oversimplifies the relationship between presidential administrations and gas prices. Gas prices have fluctuated significantly over the past 20 years, with little correlation to which president or party is in power. As Patrick De Haan,",
+        "scientist": "As a scientist, I must evaluate the claim \"Gas prices were WAY higher in 2008, under REPUBLICAN president George W. Bush\" based on empirical evidence and data analysis. After reviewing the provided evidence, I must oppose this claim.\n\nThe claim relies on a snapshot of gas prices in 2008, which is true, but it lacks context and ignores the fluctuations in gas prices throughout the Bush administration. The evidence from the U.S. Energy Information Administration (EIA) shows that gas prices did reach a peak in July 2008, but it also reveals that prices were lower during other periods of the Bush administration, including the post-9/11 economic slowdown and the 2008 Wall Street crash and financial crisis.\n\nFurthermore, the claim ignores the significant economic shocks that occurred during the Bush administration, including the 9/11 attacks and the 2008 mortgage crisis, which had a profound impact on the global economy and gas prices. The data shows that gas prices plummeted in the aftermath of these events, with prices reaching as low as $1.07 in 2001 and $1.83 in 2008.\n\nAdditionally, the Organization of the Petroleum Exporting Countries (OPEC) plays a significant role in controlling global oil supply, which affects gas prices. The evidence suggests that OPEC's production decisions, rather than the president or party in power, are a major factor in determining gas prices.\n\nIn conclusion, while it is true that gas prices were"
+      },
+      "rebuttal": {
+        "politician": "I disagree with my opponent's assessment of the claim \"Gas prices were WAY higher in 2008, under REPUBLICAN president George W. Bush.\" While it's true that gas prices did reach a peak in July 2008, my opponent's argument relies too heavily on cherry-picked data and ignores the broader context.\n\nFirstly, my opponent's focus on the peak price in 2008 is misleading. The claim is not about the highest price, but about the overall trend and comparison to current prices. The data shows that gas prices were indeed higher in 2008 than they are today, and that's a fact that can't be ignored.\n\nSecondly, my opponent's emphasis on the economic shocks during the Bush administration is a red herring. While those events did have an impact on the economy, they don't change the fact that gas prices were higher in 2008 than they are today. The claim is not about the causes of high gas prices, but about the fact that they were higher during the Bush administration.\n\nThirdly, my opponent's argument that OPEC's production decisions are the primary driver of gas prices is an oversimplification. While OPEC does play a role, it's not the only factor. The claim is about the relationship between the president and gas prices, and the data shows that gas prices were higher during the Bush administration.\n\nFinally, my opponent's conclusion that the claim is false because it lacks context is a straw man argument. The",
+        "scientist": "I disagree with my opponent's argument that the claim \"Gas prices were WAY higher in 2008, under Republican president George W. Bush\" is inaccurate. While it is true that gas prices did fluctuate during the Bush administration, the evidence suggests that prices were indeed higher in 2008 than in other years.\n\nFirstly, the statistics from the U.S. Energy Information Administration (EIA) confirm that the highest gas prices occurred in July 2008, during the Bush administration. This is a fact that cannot be disputed.\n\nSecondly, while my opponent is correct that the 9/11 attacks and the 2008 mortgage crisis and Wall Street collapse had an impact on the global economy, these events do not negate the fact that gas prices were higher in 2008. In fact, the EIA data shows that gas prices were already rising before these events occurred, and the peak price of $4.11 in July 2008 was reached before the crisis.\n\nThirdly, my opponent's argument that OPEC's decisions play a significant role in controlling global oil supply and demand is accurate. However, this does not contradict the claim that gas prices were higher in 2008. In fact, OPEC's decision to increase production in 2001 led to a decrease in prices, and their decision to reduce production in 2008 led to an increase in prices.\n\nFinally, my opponent's claim that gas prices have fluctuated significantly over the past 20 years with"
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening",
+      "rebuttal"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "continue",
+        "rationale": "DECISION: CONTINUE\nREASON: While the opening statements have provided some valuable context and evidence, I believe that the rebuttal round may provide additional insights and counterarguments that could further clarify the issue and help me make a more informed decision.",
+        "choice_logprobs": {
+          "STOP": -2.436985969543457,
+          "CONTINUE": -0.09323608875274658
+        },
+        "choice_probabilities": {
+          "STOP": 0.08756384904745382,
+          "CONTINUE": 0.912436150952546
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": -0.8248723019050922,
+        "confidence": 0.9976686439026008,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "closing",
+        "decision": "stop",
+        "rationale": "DECISION: CONTINUE\nREASON: While the evidence presented so far provides some insight into the claim, I believe that the Closing round may provide additional context or clarification that could impact my decision.\n[EARLY STOP TRIGGERED: s=-0.4308 >= -0.6, c=0.7670 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -1.2592703104019165,
+          "CONTINUE": -0.3373953402042389
+        },
+        "choice_probabilities": {
+          "STOP": 0.28457601028405616,
+          "CONTINUE": 0.7154239897159438
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": -0.43084797943188763,
+        "confidence": 0.7670181824327255,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": true
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "HALF-TRUE",
+        "response": "REASON: The claim \"Gas prices were WAY higher in 2008, under REPUBLICAN president George W. Bush\" is partially supported by evidence, specifically the statistics from the U.S. Energy Information Administration showing that gas prices reached a peak in July 2008. However, the claim oversimplifies the context and ignores the significant economic shocks that occurred during the Bush administration, including the 9/11 attacks and the 2008 mortgage crisis, which had a profound impact on the global economy and gas prices. Additionally, the claim fails to acknowledge the role of global supply and demand in determining gas prices, particularly the influence of OPEC's production decisions.\n\nVERDICT: HALF-TRUE",
+        "probability": 0.9976686439026008,
+        "verdict_probabilities": {
+          "TRUE": 0.00046465791617401994,
+          "FALSE": 0.001866698181225161,
+          "HALF-TRUE": 0.9976686439026008
+        }
+      },
+      "round_2": {
+        "verdict": "TRUE",
+        "response": "REASON: The claim \"Gas prices were WAY higher in 2008, under REPUBLICAN president George W. Bush\" is supported by credible evidence from the U.S. Energy Information Administration, which shows that the highest gas prices occurred in July 2008, during the Bush administration. The evidence also highlights the significant economic shocks that occurred during the Bush administration, including the 9/11 attacks and the 2008 mortgage crisis and Wall Street collapse, which had a profound impact on the global economy and gas prices. Additionally, the Organization of the Petroleum Exporting Countries (OPEC) plays a significant role in controlling global oil supply, which affects gas prices.\n\nVERDICT: TRUE",
+        "probability": 0.7670181824327255,
+        "verdict_probabilities": {
+          "TRUE": 0.7670181824327255,
+          "FALSE": 0.002681188853947754,
+          "HALF-TRUE": 0.23030062871332677
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "TRUE",
+      "response": "REASON: The claim \"Gas prices were WAY higher in 2008, under REPUBLICAN president George W. Bush\" is supported by credible evidence from the U.S. Energy Information Administration, which shows that the highest gas prices occurred in July 2008, during the Bush administration. The evidence also highlights the significant economic shocks that occurred during the Bush administration, including the 9/11 attacks and the 2008 mortgage crisis and Wall Street collapse, which had a profound impact on the global economy and gas prices. Additionally, the Organization of the Petroleum Exporting Countries (OPEC) plays a significant role in controlling global oil supply, which affects gas prices.\n\nVERDICT: TRUE",
+      "probability": 0.786020660184202,
+      "verdict_probabilities": {
+        "TRUE": 0.786020660184202,
+        "FALSE": 0.002424761711153255,
+        "HALF-TRUE": 0.21155457810464473
+      }
+    },
+    "early_termination_count": 1
+  },
+  "12995": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "I strongly oppose the claim that if you don't comply with COVID-19 vaccination, you won't be able to receive your Social Security or disability benefits. This claim is not only false but also misleading and alarmist.\n\nFirstly, there is no such vaccination requirement in place, and none has been proposed. The evidence presented shows that Senator Rick Scott's bill, which was introduced to prohibit requiring vaccination as a condition of receiving Social Security benefits, was misinterpreted and taken out of context.\n\nSecondly, Senator Ron Wyden, a respected member of the Senate, has accurately pointed out that there is no effort to tie Social Security benefits to vaccinations. This is not a legitimate policy proposal, and it's unfair to scare people into believing otherwise.\n\nThirdly, as a responsible politician, I believe it's essential to prioritize transparency and accuracy in our public discourse. Spreading misinformation and fear-mongering only serves to undermine trust in our institutions and create unnecessary anxiety among our citizens.\n\nIn conclusion, I urge everyone to be cautious of false information and to verify facts before sharing them. We must work together to promote a culture of truth and accuracy in our political discourse.",
+        "scientist": "As a scientist, I must emphasize that the claim \"if you don't comply and get a COVID-19 vaccine, you won't be able to receive your Social Security or disability money\" is FALSE. This claim is based on a misleading interpretation of a Senate floor discussion and has been widely debunked.\n\nThe evidence clearly shows that there is no such vaccination requirement in place, and no proposal has been made to tie Social Security benefits to vaccination status. Senator Rick Scott's bill, which was introduced on the same day, aims to prohibit requiring vaccination as a condition of receiving Social Security benefits, not to implement such a requirement.\n\nFurthermore, Senator Ron Wyden's remarks on the Senate floor accurately characterized the bill as a political stunt, and Scott himself acknowledged that there is no pending legislation that would tie Social Security benefits to vaccination status. This lack of evidence and the clear political motivations behind the claim make it clear that the statement is unfounded and misleading.\n\nAs a scientist, I rely on empirical evidence and data, and in this case, the evidence is clear: there is no scientific basis for this claim. I urge everyone to be cautious of misinformation and to verify claims through reputable sources before sharing or believing them."
+      },
+      "rebuttal": {
+        "politician": "",
+        "scientist": ""
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "stop",
+        "rationale": "DECISION: STOP\nREASON: The evidence presented in the opening rounds is clear and conclusive, showing that there is no vaccination requirement in place and no proposal to tie Social Security benefits to vaccination status. The claims made by both politicians and the scientist are consistent and supported by the evidence, making it unnecessary to continue the debate.\n[EARLY STOP TRIGGERED: s=0.9973 >= -0.6, c=1.0000 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -0.0014505588915199041,
+          "CONTINUE": -6.610825538635254
+        },
+        "choice_probabilities": {
+          "STOP": 0.9986541395714775,
+          "CONTINUE": 0.0013458604285225078
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": 0.9973082791429551,
+        "confidence": 0.9999899771343425,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": false
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "FALSE",
+        "response": "REASON: The claim is based on a misleading interpretation of a Senate floor discussion and has been widely debunked. There is no vaccination requirement in place, and no proposal has been made to tie Social Security benefits to vaccination status. Senator Rick Scott's bill aims to prohibit requiring vaccination as a condition of receiving Social Security benefits, not to implement such a requirement. Senator Ron Wyden's remarks on the Senate floor accurately characterized the bill as a political stunt, and Scott himself acknowledged that there is no pending legislation that would tie Social Security benefits to vaccination status.\n\nVERDICT: FALSE",
+        "probability": 0.9999899771343425,
+        "verdict_probabilities": {
+          "TRUE": 6.439014417279034e-06,
+          "FALSE": 0.9999899771343425,
+          "HALF-TRUE": 3.583851240194657e-06
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "FALSE",
+      "response": "REASON: The claim is based on a misleading interpretation of a Senate floor discussion and has been widely debunked. There is no vaccination requirement in place, and no proposal has been made to tie Social Security benefits to vaccination status. Senator Rick Scott's bill aims to prohibit requiring vaccination as a condition of receiving Social Security benefits, not to implement such a requirement. Senator Ron Wyden's remarks on the Senate floor accurately characterized the bill as a political stunt, and Scott himself acknowledged that there is no pending legislation that would tie Social Security benefits to vaccination status.\n\nVERDICT: FALSE",
+      "probability": 0.9999767322317863,
+      "verdict_probabilities": {
+        "TRUE": 1.0952990252884073e-05,
+        "FALSE": 0.9999767322317863,
+        "HALF-TRUE": 1.2314777960888543e-05
+      }
+    },
+    "early_termination_count": 1
+  },
+  "12996": {
+    "mode": "hybrid_mcq_adaptive",
+    "thresholds": {
+      "tau_s": -0.6,
+      "tau_v": 0.75
+    },
+    "transcripts": {
+      "opening": {
+        "politician": "I oppose the claim that Desmond Tutu died on October 20, 2021. As a politician, I must rely on credible sources and evidence to inform my stance. In this case, the evidence presented clearly indicates that the claim is false.\n\nFirstly, the claim originated from a fake Twitter account created by an Italian man, Tommaso Debenedetti, who has a history of creating hoax accounts and spreading false information. This alone raises serious doubts about the credibility of the claim.\n\nSecondly, the account was deleted shortly after the rumor spread, which suggests that it was intentionally created to spread misinformation. Furthermore, the account's tweets were quickly debunked by the Desmond and Leah Tutu Legacy Foundation, which categorically stated that Archbishop Emeritus Desmond Tutu is still alive.\n\nThirdly, the fake account's tweet claiming to be from Archbishop Stephen Moreo of Johannesburg was also debunked, with Moreo himself denying the report and calling it \"false and malicious\". This further undermines the credibility of the claim.\n\nLastly, the fact that the rumor spread quickly online, fueled by a flurry of blog sites and verified Twitter users, highlights the importance of verifying information before sharing it. As a politician, I must emphasize the importance of fact-checking and responsible social media use to prevent the spread of misinformation.\n\nIn conclusion, based on the evidence presented, I firmly oppose the claim that Desmond Tutu died on October 20, 2021. As a politician, I must prioritize the truth",
+        "scientist": "I oppose the claim that Desmond Tutu died on October 20, 2021. The evidence presented clearly shows that the claim is false and was fabricated by a fake Twitter account created by an Italian journalist, Tommaso Debenedetti, who has a history of creating hoax accounts.\n\nThe fake account, which claimed to belong to Archbishop Stephen Moreo of Johannesburg, tweeted the false news of Tutu's death, and the rumor quickly spread online. However, multiple sources, including the Desmond and Leah Tutu Legacy Foundation, have confirmed that Tutu is still alive and that the claim is completely fabricated.\n\nThe foundation's statement on its website, Facebook, and Twitter, as well as Moreo's own statement, categorically deny the rumor and confirm that Tutu is still alive. Additionally, the fake Twitter account was deleted after the rumor took off, and another tweet from the account revealed that it was a hoax created by Debenedetti.\n\nThe evidence presented is clear and unequivocal: Desmond Tutu did not die on October 20, 2021. The claim is a fabrication, and it is essential to rely on credible sources and fact-checking to verify information before spreading it online."
+      },
+      "rebuttal": {
+        "politician": "",
+        "scientist": ""
+      },
+      "closing": {
+        "politician": "",
+        "scientist": ""
+      }
+    },
+    "executed_rounds": [
+      "opening"
+    ],
+    "continuation_decisions": [
+      {
+        "round": "opening",
+        "decision": "continue",
+        "rationale": "Opening round must always be executed.",
+        "choice_logprobs": null,
+        "choice_probabilities": null,
+        "choice_first_tokens": null,
+        "stop_margin": 0.0,
+        "confidence": 0.0,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": false,
+        "standard_continue_decision": true
+      },
+      {
+        "round": "rebuttal",
+        "decision": "stop",
+        "rationale": "DECISION: STOP\nREASON: The evidence presented is clear and unequivocal, and both debaters have presented a strong case against the claim that Desmond Tutu died on October 20, 2021. The fake Twitter account, the denial from the Desmond and Leah Tutu Legacy Foundation, and the statements from Archbishop Stephen Moreo all confirm that the claim is false, and I have enough information to reach a final verdict.\n[EARLY STOP TRIGGERED: s=0.9905 >= -0.6, c=1.0000 >= 0.75]",
+        "choice_logprobs": {
+          "STOP": -0.004944478161633015,
+          "CONTINUE": -5.348694324493408
+        },
+        "choice_probabilities": {
+          "STOP": 0.9952447993629185,
+          "CONTINUE": 0.004755200637081497
+        },
+        "choice_first_tokens": {
+          "STOP": " STOP",
+          "CONTINUE": " CONT"
+        },
+        "stop_margin": 0.9904895987258371,
+        "confidence": 0.9999974033750249,
+        "tau_s": -0.6,
+        "tau_v": 0.75,
+        "terminated_early": true,
+        "standard_continue_decision": false
+      }
+    ],
+    "round_judges": {
+      "round_1": {
+        "verdict": "FALSE",
+        "response": "REASON: The evidence presented clearly shows that the claim is false and was fabricated by a fake Twitter account created by an Italian journalist, Tommaso Debenedetti, who has a history of creating hoax accounts. The fake account was deleted after the rumor took off, and multiple sources, including the Desmond and Leah Tutu Legacy Foundation, have confirmed that Tutu is still alive and that the claim is completely fabricated.\n\nVERDICT: FALSE",
+        "probability": 0.9999974033750249,
+        "verdict_probabilities": {
+          "TRUE": 2.5413497058114664e-06,
+          "FALSE": 0.9999974033750249,
+          "HALF-TRUE": 5.527526932131255e-08
+        }
+      }
+    },
+    "final_verdict": {
+      "verdict": "FALSE",
+      "response": "REASON: The evidence presented clearly shows that the claim is false and was fabricated by a fake Twitter account created by an Italian journalist, Tommaso Debenedetti, who has a history of creating hoax accounts. The fake account was deleted after the rumor took off, and multiple sources, including the Desmond and Leah Tutu Legacy Foundation, have confirmed that Tutu is still alive and that the claim is completely fabricated.\n\nVERDICT: FALSE",
+      "probability": 0.99999462233269,
+      "verdict_probabilities": {
+        "TRUE": 5.296611653360544e-06,
+        "FALSE": 0.99999462233269,
+        "HALF-TRUE": 8.105565666877673e-08
+      }
+    },
+    "early_termination_count": 1
+  }
+}
