@@ -10,7 +10,7 @@ with open("../data/evidence_id_to_text.json", "r") as f:
     evidence_id_to_text = json.load(f)
 
 # Input claim to retrieve evidence for
-with open("../data/test.json", "r") as f:
+with open("../data/original_data.json", "r") as f:
     all_examples = json.load(f)
 example_to_retrieved_evidence_map = {}
 for example in tqdm(all_examples, desc="Processing examples"):

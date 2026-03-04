@@ -22,6 +22,7 @@ def load_model(model_path=None, model_type="llama", api_key=None, gpt_model_name
             device_map="auto",
             torch_dtype=torch.float16
         )
+        model.eval()
         return tokenizer, model
     
     elif model_type == "qwen":
@@ -33,6 +34,7 @@ def load_model(model_path=None, model_type="llama", api_key=None, gpt_model_name
             device_map="auto",
             torch_dtype=torch.float16
         )
+        model.eval()
         return tokenizer, model
     
     elif model_type == "gpt":

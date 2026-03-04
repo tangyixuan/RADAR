@@ -11,7 +11,6 @@ from prompts.templates import (
 )
 from agents.chat_template_utils import (
     build_chat_prompt,
-    build_chat_prompts,
     extract_assistant_response,
     inference_generate,
 )
@@ -32,7 +31,7 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
     if len(model_info) == 2:
         first, second = model_info
         
-        # 通过检查第二个元素来区分模型类型
+        # Determine the model type by inspecting the second element
         if isinstance(second, str):
             # GPT model: (client, model_name)
             client, model_name = model_info
@@ -109,122 +108,3 @@ def judge_final_verdict(claim, evidence, pro_open, con_open, pro_rebut, con_rebu
         pro_close, con_close
     )
     return run_model(get_system_prompt("judge"), prompt, max_tokens=400)
-
-def run_model_batch(system_prompts: list, user_prompts: list, max_tokens: int = 300):
-    """Run model inference in batch for Qwen model"""
-    if model_info is None:
-        raise ValueError("Model not loaded. Please call set_model_info() first.")
-    
-    if len(model_info) == 2:
-        first, second = model_info
-        if hasattr(first, 'chat') and hasattr(first.chat, 'completions'):
-            # GPT model - process individually
-            results = []
-            for sys_prompt, usr_prompt in zip(system_prompts, user_prompts):
-                result = run_model(sys_prompt, usr_prompt, max_tokens)
-                results.append(result)
-            return results
-        else:
-            # Local model (Qwen or Llama) - batch processing
-            tokenizer, model = model_info
-            full_prompts, used_chat_templates = build_chat_prompts(tokenizer, system_prompts, user_prompts)
-            
-            # Tokenize all prompts
-            inputs = tokenizer(full_prompts, return_tensors="pt", padding=True, truncation=True).to(model.device)
-            
-            # Generate in batch
-            generate_kwargs = {
-                "max_new_tokens": max_tokens,
-                "do_sample": False,
-                "use_cache": True,
-                "eos_token_id": tokenizer.eos_token_id,
-                "pad_token_id": tokenizer.eos_token_id,
-            }
-            outputs = inference_generate(
-                model,
-                inputs,
-                **generate_kwargs,
-            )
-            
-            # Decode all outputs
-            responses = []
-            for i, output in enumerate(outputs):
-                raw_response = tokenizer.decode(output, skip_special_tokens=True)
-                responses.append(extract_assistant_response(raw_response, used_chat_templates[i]))
-            
-            return responses
-    
-    else:
-        raise ValueError("Invalid model_info format")
-
-def run_multi_agent_batch(claims, evidences, batch_size=8):
-    """Run multi-agent debate in batch for Qwen model"""
-    if model_info is None:
-        raise ValueError("Model not loaded. Please call set_model_info() first.")
-    
-    results = []
-    for i in range(0, len(claims), batch_size):
-        batch_claims = claims[i:i+batch_size]
-        batch_evidences = evidences[i:i+batch_size]
-        
-        batch_results = []
-        for claim, evidence in zip(batch_claims, batch_evidences):
-            # Run each debate individually but collect prompts for batch processing
-            pro_open_prompt = user_prompt_opening_pro(claim, evidence)
-            con_open_prompt = user_prompt_opening_con(claim, evidence)
-            
-            # Batch process opening statements
-            system_prompt = get_system_prompt("debater")
-            opening_results = run_model_batch(
-                [system_prompt] * 2, 
-                [pro_open_prompt, con_open_prompt]
-            )
-            pro_open, con_open = opening_results
-            
-            # Generate rebuttal prompts
-            pro_rebut_prompt = user_prompt_rebuttal_pro(claim, evidence, con_open)
-            con_rebut_prompt = user_prompt_rebuttal_con(claim, evidence, pro_open)
-            
-            # Batch process rebuttals
-            rebuttal_results = run_model_batch(
-                [system_prompt] * 2,
-                [pro_rebut_prompt, con_rebut_prompt]
-            )
-            pro_rebut, con_rebut = rebuttal_results
-            
-            # Generate closing prompts
-            pro_close_prompt = user_prompt_closing_pro(claim, evidence)
-            con_close_prompt = user_prompt_closing_con(claim, evidence)
-            
-            # Batch process closings
-            closing_results = run_model_batch(
-                [system_prompt] * 2,
-                [pro_close_prompt, con_close_prompt]
-            )
-            pro_close, con_close = closing_results
-            
-            # Generate judge prompt
-            judge_prompt = user_prompt_judge_full(
-                claim, evidence,
-                pro_open, con_open,
-                pro_rebut, con_rebut,
-                pro_close, con_close
-            )
-            
-            # Process judge verdict
-            judge_system = get_system_prompt("judge")
-            final_result = run_model(judge_system, judge_prompt, max_tokens=400)
-            
-            batch_results.append({
-                "pro_opening": pro_open,
-                "con_opening": con_open,
-                "pro_rebuttal": pro_rebut,
-                "con_rebuttal": con_rebut,
-                "pro_closing": pro_close,
-                "con_closing": con_close,
-                "final_verdict": final_result
-            })
-        
-        results.extend(batch_results)
-    
-    return results

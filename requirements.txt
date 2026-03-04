@@ -4,3 +4,5 @@ chromadb
 tqdm
 sentence_transformers
 accelerate
+openai
+pandas

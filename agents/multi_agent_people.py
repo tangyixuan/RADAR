@@ -31,7 +31,7 @@ def run_model(system_prompt: str, user_prompt: str, max_tokens: int = 300):
     if len(model_info) == 2:
         first, second = model_info
         
-        # 通过检查第二个元素来区分模型类型
+        # Determine the model type by inspecting the second element
         if isinstance(second, str):
             # GPT model: (client, model_name)
             client, model_name = model_info

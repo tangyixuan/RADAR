@@ -4,7 +4,7 @@ from tqdm import tqdm
 from chroma import ChromaClient
 
 # Load examples from file
-with open("../data/test.json", "r") as f:
+with open("../data/original_data.json", "r") as f:
     all_examples = json.load(f)
 
 chroma_client = ChromaClient(vector_name="evidence_bgebase")

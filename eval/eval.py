@@ -21,7 +21,33 @@ def extract_verdict_single(verdict_list):
 
 def extract_verdict_multi(content):
     # Try to get verdict from different possible field names
-    text = content.get("final_verdict", "") or content.get("verdict", "")
+    # Handle nested dictionary structure (e.g., final_judge -> verdict)
+    verdict_value = None
+    
+    # Check if there's a final_judge field (for hybrid/round mode)
+    if "final_judge" in content and isinstance(content["final_judge"], dict):
+        verdict_value = content["final_judge"].get("verdict")
+    
+    # Fallback to direct verdict field
+    if verdict_value is None:
+        verdict_value = content.get("final_verdict") or content.get("verdict")
+    
+    # If verdict_value is already a string label, return it directly
+    if isinstance(verdict_value, str):
+        verdict_upper = verdict_value.upper()
+        if verdict_upper in ["TRUE", "FALSE", "HALF-TRUE"]:
+            return verdict_upper
+    
+    # If it's still a dict or complex object, try to extract text
+    text = ""
+    if isinstance(verdict_value, dict):
+        text = verdict_value.get("response", "") or verdict_value.get("verdict_text", "") or str(verdict_value)
+    elif isinstance(verdict_value, str):
+        text = verdict_value
+    else:
+        text = str(verdict_value) if verdict_value else ""
+    
+    # Try regex patterns
     patterns = [
         r'\[?VERDICT\]:\s*(TRUE|FALSE|HALF-TRUE)',
         r'VERDICT\s*:\s*(TRUE|FALSE|HALF-TRUE)',
@@ -30,6 +56,8 @@ def extract_verdict_multi(content):
         match = re.search(pattern, text, re.MULTILINE | re.DOTALL | re.IGNORECASE)
         if match:
             return match.group(1).upper()
+    
+    # Fallback to keyword search
     keyword_match = re.search(r'\b(TRUE|FALSE|HALF-TRUE)\b', text, re.IGNORECASE)
     return keyword_match.group(1).upper() if keyword_match else "UNKNOWN"
 

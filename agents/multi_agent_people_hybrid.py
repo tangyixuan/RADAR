@@ -3,7 +3,6 @@ import re
 import torch
 from typing import Dict, List, Optional, Tuple
 
-from model.loader import load_model
 from prompts.templates_people import (
     get_system_prompt,
     politician_opening_prompt,
@@ -63,39 +62,34 @@ def run_model(
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt},
             ]
-            
+
+            # For GPT models, we can use logprobs in chat completions
             if collect_scores:
-                # Use completion API with logprobs for probability estimation
-                try:
-                    response = client.completions.create(
-                        model=model_name,
-                        prompt=f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant:",
-                        max_tokens=max_tokens,
-                        temperature=0.7,
-                        logprobs=5,
-                        top_logprobs=5
-                    )
-                    content = response.choices[0].text.strip()
-                    logprobs = response.choices[0].logprobs
-                    return content, logprobs
-                except Exception as e:
-                    print(f"Warning: Could not get logprobs from GPT model: {e}")
-                    # Fallback to regular chat completion
-                    response = client.chat.completions.create(
-                        model=model_name,
-                        messages=messages,
-                        max_tokens=max_tokens,
-                        temperature=0.7
-                    )
-                    return response.choices[0].message.content.strip(), None
-            else:
                 response = client.chat.completions.create(
                     model=model_name,
                     messages=messages,
                     max_tokens=max_tokens,
                     temperature=0.7,
+                    logprobs=True,
+                    top_logprobs=20,  # Match continue_check setup so STOP/CONTINUE tokens appear
                 )
-                return response.choices[0].message.content.strip()
+                content = response.choices[0].message.content.strip()
+
+                # Extract logprobs information for GPT models
+                generation_info = {
+                    "logprobs": response.choices[0].logprobs,
+                    "model_type": "gpt",
+                }
+                return content, generation_info
+
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=messages,
+                max_tokens=max_tokens,
+                temperature=0.7,
+            )
+            content = response.choices[0].message.content.strip()
+            return content
 
         # Local model: (tokenizer, model)
         tokenizer, model = model_info
@@ -244,6 +238,67 @@ def _compute_choice_logprobs_local(
     return choice_logprobs, choice_first_tokens
 
 
+def _compute_choice_logprobs_gpt(
+    client,
+    model_name: str,
+    system_prompt: str,
+    user_prompt: str,
+    assistant_context: str,
+    choices: tuple[str, ...],
+) -> tuple[Dict[str, float], Dict[str, str]]:
+    base_prompt = (
+        f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant: {assistant_context}"
+    )
+    base_length = len(base_prompt)
+
+    choice_logprobs: Dict[str, float] = {}
+    choice_first_tokens: Dict[str, str] = {}
+    for choice in choices:
+        prompt_with_choice = base_prompt + choice
+        response = client.completions.create(
+            model=model_name,
+            prompt=prompt_with_choice,
+            max_tokens=0,
+            temperature=0,
+            logprobs=1,
+            echo=True,
+        )
+        logprob_data = response.choices[0].logprobs
+        if logprob_data is None or logprob_data.tokens is None:
+            raise RuntimeError("Logprob data unavailable for continuation scoring.")
+
+        tokens = logprob_data.tokens
+        token_logprobs = logprob_data.token_logprobs
+        text_offsets = logprob_data.text_offset
+
+        recorded = False
+        for delta in (0, 1, 2):
+            first_idx = None
+            for idx, offset in enumerate(text_offsets):
+                if offset is not None and offset >= base_length - delta:
+                    first_idx = idx
+                    break
+
+            if first_idx is None:
+                continue
+
+            first_token_logprob = token_logprobs[first_idx]
+            first_token_text = tokens[first_idx]
+            if first_token_logprob is not None:
+                choice_logprobs[choice] = first_token_logprob
+            else:
+                choice_logprobs[choice] = float("-inf")
+            choice_first_tokens[choice] = first_token_text
+            recorded = True
+            break
+
+        if not recorded:
+            choice_logprobs[choice] = float("-inf")
+            choice_first_tokens[choice] = ""
+
+    return choice_logprobs, choice_first_tokens
+
+
 def _compute_choice_logprobs_gpt_mcq(client, model_name: str, system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
     """Compute next-token log-probabilities for MCQ choices using GPT-style models."""
     base_prompt = f"System: {system_prompt}\n\nUser: {user_prompt}\n\nAssistant: {assistant_context}"
@@ -342,48 +397,123 @@ def compute_continuation_logprobs(
     )
 
 
-def _compute_choice_logprobs_from_generation(
-    generation_info: Dict[str, object],
-    choices: tuple[str, ...]
-) -> tuple[Dict[str, float], Dict[str, str]]:
+def _compute_choice_logprobs_from_generation(generation_info: Dict[str, object]) -> tuple[Dict[str, float], Dict[str, str]]:
+    # Check if this is GPT model generation_info
+    if generation_info.get("model_type") == "gpt":
+        return _compute_choice_logprobs_from_gpt_generation(generation_info)
+
+    # Otherwise, handle local model generation_info
     tokenizer = generation_info.get("tokenizer")
     scores = generation_info.get("scores")
     generated_tokens = generation_info.get("generated_tokens")
 
     if tokenizer is None or scores is None or generated_tokens is None:
-        raise ValueError("Incomplete generation info for choice scoring.")
+        raise ValueError("Incomplete generation info for continuation scoring.")
 
     if not scores:
-        raise ValueError("Empty generation scores for choice scoring.")
+        raise ValueError("Empty generation scores for continuation scoring.")
 
-    # Get token IDs for choices
-    choice_token_ids = {}
-    for choice in choices:
-        token_ids = tokenizer.encode(f" {choice}", add_special_tokens=False)
-        if token_ids:
-            choice_token_ids[choice] = token_ids[0]
-        else:
-            raise ValueError(f"Failed to obtain token ids for choice '{choice}'.")
+    stop_token_ids = tokenizer.encode(" STOP", add_special_tokens=False)
+    continue_token_ids = tokenizer.encode(" CONTINUE", add_special_tokens=False)
+    if not stop_token_ids or not continue_token_ids:
+        raise ValueError("Failed to obtain STOP/CONTINUE token ids from tokenizer.")
+
+    stop_token_id = stop_token_ids[0]
+    continue_token_id = continue_token_ids[0]
 
     decision_index = None
     for idx, token_id in enumerate(generated_tokens):
-        if token_id in choice_token_ids.values():
+        if token_id in (stop_token_id, continue_token_id):
             decision_index = idx
             break
 
     if decision_index is None or decision_index >= len(scores):
         raise ValueError("Could not locate decision token in generated sequence.")
 
-    score_tensor = scores[decision_index]
-    if isinstance(score_tensor, torch.Tensor) and score_tensor.ndim == 2:
-        score_tensor = score_tensor[0]
+    score_tensor = scores[decision_index][0]
     log_probs = torch.log_softmax(score_tensor, dim=-1)
 
-    choice_logprobs = {}
-    choice_first_tokens = {}
-    for choice, token_id in choice_token_ids.items():
-        choice_logprobs[choice] = float(log_probs[token_id].item())
-        choice_first_tokens[choice] = tokenizer.decode([token_id])
+    choice_logprobs = {
+        "STOP": float(log_probs[stop_token_id].item()),
+        "CONTINUE": float(log_probs[continue_token_id].item()),
+    }
+    choice_first_tokens = {
+        "STOP": tokenizer.decode([stop_token_id]),
+        "CONTINUE": tokenizer.decode([continue_token_id]),
+    }
+
+    print("choice_logprobs:", choice_logprobs)
+    print("choice_first_tokens:", choice_first_tokens)
+
+    return choice_logprobs, choice_first_tokens
+
+
+def _compute_choice_logprobs_from_gpt_generation(generation_info: Dict[str, object]) -> tuple[Dict[str, float], Dict[str, str]]:
+    """Extract STOP/CONTINUE logprobs from GPT chat completion response"""
+    logprobs_data = generation_info.get("logprobs")
+
+    if logprobs_data is None or not hasattr(logprobs_data, "content"):
+        raise ValueError("No logprobs data available in GPT response")
+
+    choice_logprobs: Dict[str, float] = {}
+    choice_first_tokens: Dict[str, str] = {}
+
+    # Debug: print all tokens to see what we're getting
+    print("\n=== DEBUG: GPT Logprobs Tokens ===")
+    for idx, token_logprob_obj in enumerate(logprobs_data.content[:20]):  # Show first 20 tokens
+        print(f"Token {idx}: '{token_logprob_obj.token}' (logprob: {token_logprob_obj.logprob})")
+        if hasattr(token_logprob_obj, "top_logprobs") and token_logprob_obj.top_logprobs:
+            print(f"  Top alternatives: {[t.token for t in token_logprob_obj.top_logprobs[:5]]}")
+    print("=== END DEBUG ===\n")
+
+    decision_token_idx = -1
+
+    # Search for the token containing ' STOP' or ' CONT'
+    for idx, token_logprob_obj in enumerate(logprobs_data.content[:10]):
+        token = token_logprob_obj.token
+        if token in (' STOP', ' CONT'):
+            decision_token_idx = idx
+            print(f"DEBUG: Found decision token at position {idx}: '{token}'")
+
+            # Record the generated token's logprob
+            if token == ' STOP':
+                choice_logprobs["STOP"] = token_logprob_obj.logprob
+                choice_first_tokens["STOP"] = token
+                print(f"DEBUG: Generated ' STOP' with logprob {token_logprob_obj.logprob}")
+            else:  # ' CONT'
+                choice_logprobs["CONTINUE"] = token_logprob_obj.logprob
+                choice_first_tokens["CONTINUE"] = token
+                print(f"DEBUG: Generated ' CONT' with logprob {token_logprob_obj.logprob}")
+
+            # Extract the other choice from top_logprobs
+            if hasattr(token_logprob_obj, "top_logprobs") and token_logprob_obj.top_logprobs:
+                print(f"DEBUG: Checking top_logprobs for the alternative:")
+                for top_token_obj in token_logprob_obj.top_logprobs:
+                    if top_token_obj.token == ' STOP' and "STOP" not in choice_logprobs:
+                        choice_logprobs["STOP"] = top_token_obj.logprob
+                        choice_first_tokens["STOP"] = top_token_obj.token
+                        print(f"DEBUG: Found ' STOP' in top_logprobs with logprob {top_token_obj.logprob}")
+                    elif top_token_obj.token == ' CONT' and "CONTINUE" not in choice_logprobs:
+                        choice_logprobs["CONTINUE"] = top_token_obj.logprob
+                        choice_first_tokens["CONTINUE"] = top_token_obj.token
+                        print(f"DEBUG: Found ' CONT' in top_logprobs with logprob {top_token_obj.logprob}")
+
+            break
+
+    if decision_token_idx == -1:
+        print("DEBUG: ERROR - Could not find ' STOP' or ' CONT' token in first 10 tokens")
+
+    print(f"DEBUG: Done. STOP found: {'STOP' in choice_logprobs}, CONTINUE found: {'CONTINUE' in choice_logprobs}")
+
+    # For any missing choices, set to -inf
+    if "STOP" not in choice_logprobs:
+        choice_logprobs["STOP"] = float("-inf")
+        choice_first_tokens["STOP"] = ""
+    if "CONTINUE" not in choice_logprobs:
+        choice_logprobs["CONTINUE"] = float("-inf")
+        choice_first_tokens["CONTINUE"] = ""
+
+    print(f"\n=== DEBUG: Final choice_logprobs: {choice_logprobs} ===\n")
 
     return choice_logprobs, choice_first_tokens
 
@@ -421,6 +551,10 @@ def _compute_verdict_probability_info_from_generation(
     choices: Tuple[str, ...] = MCQ_CHOICES,
 ) -> Dict[str, object]:
     """Compute per-choice logprobs using generation scores captured during decoding."""
+    # GPT chat completions return logprob data in a different format
+    if generation_info.get("model_type") == "gpt":
+        return _compute_verdict_probability_info_from_gpt_generation(generation_info)
+
     tokenizer = generation_info.get("tokenizer")
     scores = generation_info.get("scores")
     generated_tokens = generation_info.get("generated_tokens")
@@ -508,6 +642,123 @@ def _compute_verdict_probability_info_from_generation(
     }
 
 
+def _compute_verdict_probability_info_from_gpt_generation(generation_info: Dict[str, object]) -> Dict[str, object]:
+    """Extract TRUE/FALSE/HALF-TRUE logprobs from GPT chat completion response"""
+    logprobs_data = generation_info.get("logprobs")
+
+    if logprobs_data is None:
+        raise ValueError("No logprobs data available in GPT response - logprobs_data is None")
+
+    if not hasattr(logprobs_data, "content"):
+        raise ValueError(
+            "No logprobs data available in GPT response - missing 'content' attribute."
+        )
+
+    choice_logprobs: Dict[str, float] = {}
+    choice_first_tokens: Dict[str, str] = {}
+
+    verdict_token_idx = -1
+
+    for idx, token_logprob_obj in enumerate(logprobs_data.content):
+        token = token_logprob_obj.token.strip().upper()
+
+        if token in ('TRUE', 'FALSE', 'HALF'):
+            verdict_token_idx = idx
+            print(f"\n=== DEBUG: Found verdict token at position {idx} ===")
+            print(f"Token: '{token_logprob_obj.token}' (logprob: {token_logprob_obj.logprob})")
+
+            if token == 'TRUE':
+                if idx > 0 and 'HALF' in logprobs_data.content[idx - 1].token.upper():
+                    choice_logprobs["HALF-TRUE"] = token_logprob_obj.logprob
+                    choice_first_tokens["HALF-TRUE"] = token_logprob_obj.token
+                    print(f"    -> Generated verdict: 'HALF-TRUE'")
+                else:
+                    choice_logprobs["TRUE"] = token_logprob_obj.logprob
+                    choice_first_tokens["TRUE"] = token_logprob_obj.token
+                    print(f"    -> Generated verdict: 'TRUE'")
+            elif token == 'FALSE':
+                choice_logprobs["FALSE"] = token_logprob_obj.logprob
+                choice_first_tokens["FALSE"] = token_logprob_obj.token
+                print(f"    -> Generated verdict: 'FALSE'")
+            elif token == 'HALF':
+                if idx + 1 < len(logprobs_data.content):
+                    next_token = logprobs_data.content[idx + 1].token.strip().upper()
+                    if 'TRUE' in next_token:
+                        combined_logprob = (
+                            token_logprob_obj.logprob + logprobs_data.content[idx + 1].logprob
+                        )
+                        choice_logprobs["HALF-TRUE"] = combined_logprob
+                        choice_first_tokens["HALF-TRUE"] = token_logprob_obj.token
+                        print("    -> Generated 'HALF-TRUE' (combined HALF + TRUE tokens)")
+
+            if hasattr(token_logprob_obj, "top_logprobs") and token_logprob_obj.top_logprobs:
+                print(
+                    f"\nTop alternatives for verdict token ({len(token_logprob_obj.top_logprobs)} total):"
+                )
+                for top_token_obj in token_logprob_obj.top_logprobs:
+                    print(f"  '{top_token_obj.token}' (logprob: {top_token_obj.logprob})")
+                    top_token = top_token_obj.token.strip().upper()
+
+                    if top_token == 'TRUE' and "TRUE" not in choice_logprobs:
+                        choice_logprobs["TRUE"] = top_token_obj.logprob
+                        choice_first_tokens["TRUE"] = top_token_obj.token
+                        print(f"    -> Found 'TRUE' alternative")
+
+                    elif top_token == 'FALSE' and "FALSE" not in choice_logprobs:
+                        choice_logprobs["FALSE"] = top_token_obj.logprob
+                        choice_first_tokens["FALSE"] = top_token_obj.token
+                        print(f"    -> Found 'FALSE' alternative")
+
+                    elif top_token == 'HALF' and "HALF-TRUE" not in choice_logprobs:
+                        choice_logprobs["HALF-TRUE"] = top_token_obj.logprob
+                        choice_first_tokens["HALF-TRUE"] = top_token_obj.token
+                        print(f"    -> Found 'HALF' alternative (treating as HALF-TRUE)")
+
+            print("=== END DEBUG ===\n")
+            break
+
+    if verdict_token_idx == -1:
+        print("DEBUG: WARNING - Could not find verdict token (TRUE/FALSE/HALF) in response")
+
+    print(f"\nCollected verdict logprobs: {list(choice_logprobs.keys())}")
+    for choice in MCQ_CHOICES:
+        if choice in choice_logprobs and choice_logprobs[choice] != float("-inf"):
+            print(f"  {choice}: {choice_logprobs[choice]:.4f}")
+
+    for choice in MCQ_CHOICES:
+        if choice not in choice_logprobs:
+            choice_logprobs[choice] = float("-inf")
+            choice_first_tokens[choice] = ""
+
+    choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
+    predicted_verdict = (
+        max(choice_probabilities, key=choice_probabilities.get)
+        if choice_probabilities
+        else None
+    )
+
+    verdict_logprobs = {
+        MCQ_VERDICT_MAP[choice]: logprob for choice, logprob in choice_logprobs.items()
+    }
+    verdict_probabilities = {
+        MCQ_VERDICT_MAP[choice]: prob for choice, prob in choice_probabilities.items()
+    }
+
+    print(f"\nFinal verdict probabilities:")
+    for verdict, prob in verdict_probabilities.items():
+        print(f"  {verdict}: {prob:.4f}")
+    print()
+
+    return {
+        "choice_logprobs": choice_logprobs,
+        "choice_probabilities": choice_probabilities,
+        "choice_first_tokens": choice_first_tokens,
+        "predicted_verdict": MCQ_VERDICT_MAP.get(predicted_verdict, predicted_verdict),
+        "verdict_logprobs": verdict_logprobs,
+        "verdict_probabilities": verdict_probabilities,
+    }
+
+
 # === Continuation Decision Functions ===
 
 def _compute_continuation_probability_info_with_generation(
@@ -518,7 +769,7 @@ def _compute_continuation_probability_info_with_generation(
     if generation_info is not None:
         try:
             choice_logprobs, choice_first_tokens = _compute_choice_logprobs_from_generation(
-                generation_info, CONTINUATION_CHOICES
+                generation_info
             )
             choice_probabilities = _logprobs_to_probabilities(choice_logprobs)
             predicted_decision = (
@@ -934,47 +1185,6 @@ def judge_final_verdict_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_
     }
 
 
-# === Main Hybrid Debate Function ===
-def run_multi_agent_people_round_mcq(claim, evidence):
-    """Run the debate and compute verdict token probabilities at each judge (Round-only mode)"""
-    print("\n=== Running Multi-Agent People Debate with Round Judges (MCQ probability view) ===")
-
-    print("Round 1: Opening statements...")
-    pol_open = opening_politician(claim, evidence)
-    sci_open = opening_scientist(claim, evidence)
-
-    print("Round 1 Judge evaluation (probabilities)...")
-    round_1_judge = judge_round_1_mcq(claim, evidence, pol_open, sci_open)
-
-    print("Round 2: Rebuttal statements...")
-    pol_rebut = rebuttal_politician(claim, evidence, sci_open)
-    sci_rebut = rebuttal_scientist(claim, evidence, pol_open)
-
-    print("Round 2 Judge evaluation (probabilities)...")
-    round_2_judge = judge_round_2_mcq(claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut)
-
-    print("Round 3: Closing statements...")
-    pol_close = closing_politician(claim, evidence)
-    sci_close = closing_scientist(claim, evidence)
-
-    print("Final Judge evaluation (probabilities)...")
-    final_judge = judge_final_verdict_mcq(
-        claim, evidence, pol_open, sci_open, pol_rebut, sci_rebut, pol_close, sci_close
-    )
-
-    return {
-        "politician_opening": pol_open,
-        "scientist_opening": sci_open,
-        "round_1_judge": round_1_judge,
-        "politician_rebuttal": pol_rebut,
-        "scientist_rebuttal": sci_rebut,
-        "round_2_judge": round_2_judge,
-        "politician_closing": pol_close,
-        "scientist_closing": sci_close,
-        "final_judge": final_judge
-    }
-
-
 def run_multi_agent_people_hybrid_mcq(claim, evidence, tau_s=-0.6, tau_v=0.75):
     """
     Run hybrid debate with MCQ probability analysis and adaptive early stopping.
@@ -1142,26 +1352,6 @@ def run_multi_agent_people_hybrid_mcq(claim, evidence, tau_s=-0.6, tau_v=0.75):
     }
 
 
-def compute_choice_logprobs_mcq(system_prompt: str, user_prompt: str, assistant_context: str) -> Dict[str, float]:
-    """Dispatch MCQ choice log-probability computation based on loaded model."""
-    if model_info is None:
-        raise ValueError("Model not loaded. Please call set_model_info() first.")
-
-    if len(model_info) != 2:
-        raise ValueError("Invalid model_info format")
-
-    first, second = model_info
-    if isinstance(second, str):
-        client, model_name = model_info
-        return _compute_choice_logprobs_gpt_mcq(client, model_name, system_prompt, user_prompt, assistant_context)
-
-    raise RuntimeError(
-        "Local model MCQ scoring requires generation_info scores; direct recomputation path has been removed."
-    )
-
-
-# === Convenience Functions for Adaptive Early Stopping ===
-
 def run_multi_agent_people_hybrid_adaptive(claim, evidence, tau_s=-0.6, tau_v=0.75):
     """
     Convenience function to run hybrid debate with adaptive early stopping.
@@ -1178,122 +1368,6 @@ def run_multi_agent_people_hybrid_adaptive(claim, evidence, tau_s=-0.6, tau_v=0.
         Dictionary containing comprehensive results with adaptive early stopping analysis
     """
     return run_multi_agent_people_hybrid_mcq(claim, evidence, tau_s, tau_v)
-
-
-def analyze_early_stopping_performance(results: Dict) -> Dict[str, object]:
-    """
-    Analyze the performance of the adaptive early stopping mechanism.
-    
-    Args:
-        results: Results dictionary from run_multi_agent_people_hybrid_mcq
-        
-    Returns:
-        Dictionary containing early stopping performance metrics
-    """
-    continuation_decisions = results.get("continuation_decisions", [])
-    early_termination_count = results.get("early_termination_count", 0)
-    total_decisions = len(continuation_decisions)
-    
-    # Count decisions by type
-    stop_decisions = sum(1 for d in continuation_decisions if d["decision"] == "stop")
-    continue_decisions = total_decisions - stop_decisions
-    
-    # Count early terminations
-    early_stop_decisions = sum(1 for d in continuation_decisions if d.get("terminated_early", False))
-    standard_stop_decisions = stop_decisions - early_stop_decisions
-    
-    # Calculate stopping statistics  
-    early_stop_rate = early_stop_decisions / total_decisions if total_decisions > 0 else 0
-    total_stop_rate = stop_decisions / total_decisions if total_decisions > 0 else 0
-    
-    # Extract threshold information
-    thresholds = results.get("thresholds", {})
-    tau_s = thresholds.get("tau_s", 0.5)
-    tau_v = thresholds.get("tau_v", 0.7)
-    
-    # Analyze margin and confidence distributions
-    stop_margins = []
-    confidences = []
-    
-    for decision in continuation_decisions:
-        if decision.get("stop_margin") is not None:
-            stop_margins.append(decision["stop_margin"])
-        if decision.get("confidence") is not None:
-            confidences.append(decision["confidence"])
-    
-    analysis = {
-        "total_decisions": total_decisions,
-        "stop_decisions": stop_decisions,
-        "continue_decisions": continue_decisions,
-        "early_stop_decisions": early_stop_decisions,
-        "standard_stop_decisions": standard_stop_decisions,
-        "early_stop_rate": early_stop_rate,
-        "total_stop_rate": total_stop_rate,
-        "thresholds_used": {"tau_s": tau_s, "tau_v": tau_v},
-        "stop_margin_stats": {
-            "values": stop_margins,
-            "min": min(stop_margins) if stop_margins else None,
-            "max": max(stop_margins) if stop_margins else None,
-            "avg": sum(stop_margins) / len(stop_margins) if stop_margins else None
-        },
-        "confidence_stats": {
-            "values": confidences,
-            "min": min(confidences) if confidences else None,
-            "max": max(confidences) if confidences else None,
-            "avg": sum(confidences) / len(confidences) if confidences else None
-        }
-    }
-    
-    return analysis
-
-
-def recommend_thresholds(historical_results: List[Dict], target_early_stop_rate: float = 0.3) -> Tuple[float, float]:
-    """
-    Recommend optimal thresholds based on historical performance.
-    
-    Args:
-        historical_results: List of results from multiple debate runs
-        target_early_stop_rate: Target early stopping rate (default 0.3)
-        
-    Returns:
-        Tuple of recommended (tau_s, tau_v) values
-    """
-    all_margins = []
-    all_confidences = []
-    all_early_stops = []
-    
-    # Collect all decision data
-    for result in historical_results:
-        for decision in result.get("continuation_decisions", []):
-            if decision.get("stop_margin") is not None:
-                all_margins.append(decision["stop_margin"])
-                all_confidences.append(decision.get("confidence", 0))
-                all_early_stops.append(decision.get("terminated_early", False))
-    
-    if not all_margins:
-        return -0.6, 0.75  # Default thresholds
-    
-    # Sort by stop margin
-    sorted_data = sorted(zip(all_margins, all_confidences, all_early_stops), key=lambda x: x[0])
-    
-    # Find threshold that achieves target early stop rate
-    target_count = int(len(sorted_data) * target_early_stop_rate)
-    
-    if target_count < len(sorted_data):
-        recommended_tau_s = sorted_data[target_count][0]
-    else:
-        recommended_tau_s = sorted_data[-1][0]
-    
-    # For tau_v, use median confidence of early stopped cases
-    early_stop_confidences = [conf for margin, conf, early in sorted_data if early]
-    if early_stop_confidences:
-        early_stop_confidences.sort()
-        median_idx = len(early_stop_confidences) // 2
-        recommended_tau_v = early_stop_confidences[median_idx]
-    else:
-        recommended_tau_v = 0.75  # Default
-    
-    return recommended_tau_s, recommended_tau_v
 
 
 def adaptive_early_stopping_decision(claim, evidence, upcoming_round, transcripts, executed_rounds, tau_s=-0.6, tau_v=0.75, round_judges=None):
@@ -1357,17 +1431,19 @@ def adaptive_early_stopping_decision(claim, evidence, upcoming_round, transcript
     early_stop_condition = (stop_continue_diff >= tau_s) and (confidence >= tau_v)
     
     # Determine final decision
+    # ONLY dual-threshold can stop the debate; forward judge alone cannot stop it
     if early_stop_condition:
-        # Override continue decision with early stop
+        # Early stop triggered by dual-threshold
         final_continue_debate = False
         terminated_early = True
         decision_text += f"\n[EARLY STOP TRIGGERED: s={stop_continue_diff:.4f} >= {tau_s}, c={confidence:.4f} >= {tau_v}]"
     else:
-        # Use standard continuation decision
-        final_continue_debate = continue_debate
+        # Continue debate - dual-threshold not met
+        # Forward judge's recommendation is logged but does NOT directly stop the debate
+        final_continue_debate = True
         terminated_early = False
-        if not continue_debate:
-            decision_text += f"\n[STANDARD STOP: s={stop_continue_diff:.4f}, c={confidence:.4f}]"
+        decision_text += f"\n[CONTINUE: Dual-threshold not met (s={stop_continue_diff:.4f}, c={confidence:.4f})]"
+        decision_text += f"\n[Forward judge recommendation: {continue_debate}, but only dual-threshold can stop]"
     
     # Enhanced probability info with dual-threshold metrics
     enhanced_probability_info = {
