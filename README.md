@@ -1,6 +1,6 @@
-# Multi-Agent Debate System
+# RADAR: Retrieval-Grounded Multi-Agent Debate for Claim Verification
 
-A claim verification toolkit that combines document retrieval, multi-agent debate, and adaptive judging. The system can run several debate configurations, log intermediate decisions, and evaluate outputs against ground-truth labels.
+A retrieval-grounded claim verification framework that integrates document retrieval, role-based multi-agent debate, and adaptive judging. Agents with complementary perspectives reason over shared evidence through structured debate to identify misleading claims caused by missing or selectively presented context. The system supports multiple debate configurations, logs intermediate reasoning steps, and evaluates predictions against ground-truth labels.
 
 ```
 .
