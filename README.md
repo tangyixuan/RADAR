@@ -64,7 +64,7 @@ If you plan to call the OpenAI API (`--model gpt`), supply `--api_key <key>` whe
 
 ## 5. Running Inference
 
-`main.py` exposes six modes after recent pruning:
+`main.py` exposes six modes:
 
 | Mode                          | Description |
 |------------------------------|-------------|
@@ -78,7 +78,7 @@ If you plan to call the OpenAI API (`--model gpt`), supply `--api_key <key>` whe
 Common flags:
 
 - `--model {llama,qwen,gpt}`
-- `--model_path <local_model_dir>` for llama/qwen (defaults shown in `main.py`)
+- `--model_path <local_model_dir>` for llama/qwen
 - `--input_file data/<your_input>.json`
 - `--tau_s` and `--tau_v` (only used by the hybrid adaptive mode)
 
